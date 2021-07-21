@@ -122,6 +122,7 @@ Settings related to typography.
 | fluid | boolean |  |  |
 | letterSpacing | boolean | true |  |
 | lineHeight | boolean | false |  |
+| textColumns | boolean | false |  |
 | textDecoration | boolean | true |  |
 | textTransform | boolean | true |  |
 | dropCap | boolean | true |  |
@@ -192,6 +193,7 @@ Typography styles.
 | fontWeight | string |  |
 | letterSpacing | string |  |
 | lineHeight | string |  |
+| textColumns | string |  |
 | textDecoration | string |  |
 | textTransform | string |  |
 

@@ -366,6 +366,11 @@
 							"type": "boolean",
 							"default": false
 						},
+						"textColumns": {
+							"description": "Allow users to set the number of text columns.",
+							"type": "boolean",
+							"default": false
+						},
 						"textDecoration": {
 							"description": "Allow users to set custom text decorations.",
 							"type": "boolean",
@@ -1119,6 +1124,10 @@
 						},
 						"lineHeight": {
 							"description": "Sets the `line-height` CSS property.",
+							"type": "string"
+						},
+						"textColumns": {
+							"description": "Sets the `column-count` CSS property.",
 							"type": "string"
 						},
 						"textDecoration": {
