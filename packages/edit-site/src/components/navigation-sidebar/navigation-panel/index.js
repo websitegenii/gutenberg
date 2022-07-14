@@ -96,8 +96,8 @@ const NavigationPanel = ( { activeItem } ) => {
 							href={ dashboardLink ?? 'index.php' }
 						/>
 
-						<NavigationMenu>
-							<NavigationGroup title={ __( 'Editor' ) }>
+						<NavigationMenu title={ __( 'Editor' ) }>
+							<NavigationGroup>
 								{ ! isTemplatePartsMode && (
 									<>
 										<NavLink
