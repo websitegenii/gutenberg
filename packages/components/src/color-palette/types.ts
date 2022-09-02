@@ -7,6 +7,9 @@ import type { CSSProperties, MouseEventHandler, ReactNode } from 'react';
  * Internal dependencies
  */
 import type { PopoverProps } from '../popover/types';
+import type { HeadingSize } from '../heading/types';
+
+type OnColorChange = ( newColor?: string ) => void;
 
 export type ColorObject = {
 	name: string;
@@ -27,6 +30,7 @@ type PaletteProps = {
 	onChange: ( newColor?: string ) => void;
 	value?: string;
 	actions?: ReactNode;
+	headingLevel?: HeadingSize;
 };
 
 export type SinglePaletteProps = PaletteProps & {
@@ -94,4 +98,10 @@ export type ColorPaletteProps = Pick< PaletteProps, 'onChange' > & {
 	 * @default false
 	 */
 	__experimentalIsRenderedInSidebar?: boolean;
+	/**
+	 * The heaeding level.
+	 *
+	 * @default 2
+	 */
+	headingLevel?: HeadingSize;
 };
