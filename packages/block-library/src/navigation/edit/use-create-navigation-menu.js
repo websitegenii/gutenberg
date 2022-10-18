@@ -59,9 +59,12 @@ export default function useCreateNavigationMenu( clientId ) {
 					);
 				} );
 			}
+
+			const maybeSlug = slug || title;
+
 			const record = {
 				title,
-				slug,
+				slug: maybeSlug,
 				content: serialize( blocks ),
 				status: postStatus,
 			};
@@ -97,7 +100,7 @@ export default function useCreateNavigationMenu( clientId ) {
 							...params,
 							path: stripRecordKeyFromRequestPath(
 								params.path,
-								slug
+								maybeSlug
 							),
 							method: forceCreateMethod,
 						} );
@@ -105,6 +108,7 @@ export default function useCreateNavigationMenu( clientId ) {
 				}
 			)
 				.then( ( response ) => {
+					debugger;
 					setValue( response );
 					setStatus( CREATE_NAVIGATION_MENU_SUCCESS );
 					return response;
