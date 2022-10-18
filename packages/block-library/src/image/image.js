@@ -588,6 +588,11 @@ export default function Image( {
 
 		img = (
 			<>
+				<AlignmentVisualizer
+					clientId={ clientId }
+					allowedAlignments={ [ 'none', 'wide', 'full' ] }
+					value={ align }
+				/>
 				<ResizableBox
 					size={ {
 						width: width ?? 'auto',
@@ -620,11 +625,6 @@ export default function Image( {
 				>
 					{ img }
 				</ResizableBox>
-				<AlignmentVisualizer
-					clientId={ clientId }
-					allowedAlignments={ [ 'none', 'wide', 'full' ] }
-					value={ align }
-				/>
 			</>
 		);
 	}
