@@ -92,34 +92,48 @@ function selectExistingMenu( select, ref, entityConfig ) {
 		return {
 			isNavigationMenuResolved: false,
 			isNavigationMenuMissing: true,
+			navigationMenu: null,
 		};
 	}
 
-	const args = [ ...entityConfig, ref ];
-
-	const { getEntityRecord, getEditedEntityRecord, hasFinishedResolution } =
+	const { getEntityRecords, getEditedEntityRecord, hasFinishedResolution } =
 		select( coreStore );
 
-	const navigationMenu = getEntityRecord( ...args );
-	const editedNavigationMenu = getEditedEntityRecord( ...args );
-	const hasResolvedNavigationMenu = hasFinishedResolution(
-		'getEditedEntityRecord',
-		args
-	);
+	const navigationMenus = getEntityRecords( ...entityConfig, {
+		per_page: 1, // only the 1 record is required.
+		name: ref, // fetch by slug
+	} );
+
+	const hasNavigationMenu = navigationMenus?.length;
+	let args = [];
+
+	if ( hasNavigationMenu ) {
+		args = [ ...entityConfig, navigationMenus[ 0 ]?.id ];
+
+		console.log( { args } );
+	}
+
+	const editedNavigationMenu = hasNavigationMenu
+		? getEditedEntityRecord( ...args )
+		: null;
+
+	const hasResolvedNavigationMenu = hasNavigationMenu
+		? hasFinishedResolution( 'getEditedEntityRecord', args )
+		: null;
 
 	// Only published Navigation posts are considered valid.
 	// Draft Navigation posts are valid only on the editor,
 	// requiring a post update to publish to show in frontend.
 	// To achieve that, index.php must reflect this validation only for published.
 	const isNavigationMenuPublishedOrDraft =
-		editedNavigationMenu.status === 'publish' ||
-		editedNavigationMenu.status === 'draft';
+		editedNavigationMenu?.status === 'publish' ||
+		editedNavigationMenu?.status === 'draft';
 
 	return {
 		isNavigationMenuResolved: hasResolvedNavigationMenu,
 		isNavigationMenuMissing:
 			hasResolvedNavigationMenu &&
-			( ! navigationMenu || ! isNavigationMenuPublishedOrDraft ),
+			( ! hasNavigationMenu || ! isNavigationMenuPublishedOrDraft ),
 
 		// getEditedEntityRecord will return the post regardless of status.
 		// Therefore if the found post is not published then we should ignore it.

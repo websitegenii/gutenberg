@@ -33,8 +33,10 @@ function useNavigationEntityTypes( ref ) {
 	let kind, type;
 
 	if ( ! ref || ! isNumeric( ref ) ) {
-		kind = DEFAULT_ENTITY_KIND;
-		type = DEFAULT_ENTITY_TYPE;
+		// kind = DEFAULT_ENTITY_KIND;
+		// type = DEFAULT_ENTITY_TYPE;
+		kind = 'postType';
+		type = 'wp_navigation';
 	} else {
 		kind = 'postType';
 		type = 'wp_navigation';
