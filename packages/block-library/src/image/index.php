@@ -14,6 +14,15 @@
  * @return string Returns the block content with the data-id attribute added.
  */
 function render_block_core_image( $attributes, $content ) {
+
+	// Don't render if there is no URL set.
+	$processor = new WP_HTML_Tag_Processor( $content );
+	$processor->next_tag( 'img' );
+
+	if ( $processor->get_attribute( 'src' ) === null ) {
+		return '';
+	}
+
 	if ( isset( $attributes['data-id'] ) ) {
 		// Add the data-id="$id" attribute to the img element
 		// to provide backwards compatibility for the Gallery Block,
