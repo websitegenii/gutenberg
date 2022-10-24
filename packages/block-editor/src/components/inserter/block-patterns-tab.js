@@ -30,6 +30,7 @@ import { focus } from '@wordpress/dom';
 import usePatternsState from './hooks/use-patterns-state';
 import BlockPatternList from '../block-patterns-list';
 import PatternsExplorerModal from './block-patterns-explorer/explorer';
+import PatternsExplorerModal2 from './block-patterns-explorer2/explorer';
 
 function usePatternsCategories() {
 	const [ allPatterns, allCategories ] = usePatternsState();
@@ -176,6 +177,8 @@ function BlockPatternsTabs( {
 	rootClientId,
 } ) {
 	const [ showPatternsExplorer, setShowPatternsExplorer ] = useState( false );
+	const [ showPatternsExplorer2, setShowPatternsExplorer2 ] =
+		useState( false );
 	const categories = usePatternsCategories();
 	const isMobile = useViewportMatch( 'medium', '<' );
 
@@ -223,7 +226,7 @@ function BlockPatternsTabs( {
 									}
 									variant="secondary"
 								>
-									{ __( 'Explore all patterns' ) }
+									{ __( 'Pattern Directory' ) }
 								</Button>
 							</div>
 						</ItemGroup>
@@ -241,6 +244,13 @@ function BlockPatternsTabs( {
 					initialCategory={ selectedCategory }
 					patternCategories={ categories }
 					onModalClose={ () => setShowPatternsExplorer( false ) }
+				/>
+			) }
+			{ showPatternsExplorer2 && (
+				<PatternsExplorerModal2
+					initialCategory={ selectedCategory }
+					patternCategories={ categories }
+					onModalClose={ () => setShowPatternsExplorer2( false ) }
 				/>
 			) }
 		</>
