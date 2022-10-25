@@ -74,7 +74,12 @@ const Template: ComponentStory< typeof Modal > = ( {
 						non proident, sunt in culpa qui officia deserunt mollit
 						anim id est laborum.
 					</p>
-
+					<iframe
+						title="Example"
+						width="300"
+						height="200"
+						src="https://www.openstreetmap.org/export/embed.html?bbox=-0.004017949104309083%2C51.47612752641776%2C0.00030577182769775396%2C51.478569861898606&layer=mapnik"
+					/>
 					<Button variant="secondary" onClick={ closeModal }>
 						Close Modal
 					</Button>
