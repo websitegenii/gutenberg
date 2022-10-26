@@ -37,7 +37,6 @@ import { useSelect, useDispatch } from '@wordpress/data';
 import { useMergeRefs } from '@wordpress/compose';
 import { arrowLeft } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
-import { parse } from '@wordpress/blocks';
 
 /**
  * Internal dependencies
@@ -85,37 +84,12 @@ function MaybeIframe( {
 	);
 }
 
-/**
- * Given an array of nested blocks, find the first Post Content
- * block inside it, recursing through any nesting levels.
- *
- * @param {Array} blocks A list of blocks.
- *
- * @return {Object} The Post Content block.
- */
-function findPostContent( blocks ) {
-	for ( let i = 0; i < blocks.length; i++ ) {
-		if ( blocks[ i ].name === 'core/post-content' ) {
-			return blocks[ i ];
-		}
-		if ( blocks[ i ].innerBlocks.length ) {
-			const nestedPostContent = findPostContent(
-				blocks[ i ].innerBlocks
-			);
-
-			if ( nestedPostContent ) {
-				return nestedPostContent;
-			}
-		}
-	}
-}
-
 export default function VisualEditor( { styles } ) {
 	const {
 		deviceType,
 		isWelcomeGuideVisible,
 		isTemplateMode,
-		editedPostTemplate = {},
+		postContentBlock,
 		wrapperBlockName,
 		wrapperUniqueId,
 	} = useSelect( ( select ) => {
@@ -123,7 +97,6 @@ export default function VisualEditor( { styles } ) {
 			isFeatureActive,
 			isEditingTemplate,
 			__experimentalGetPreviewDeviceType,
-			getEditedPostTemplate,
 		} = select( editPostStore );
 		const { getCurrentPostId, getCurrentPostType, getEditorSettings } =
 			select( editorStore );
@@ -136,17 +109,11 @@ export default function VisualEditor( { styles } ) {
 			_wrapperBlockName = 'core/post-content';
 		}
 
-		const supportsTemplateMode = getEditorSettings().supportsTemplateMode;
-
 		return {
 			deviceType: __experimentalGetPreviewDeviceType(),
 			isWelcomeGuideVisible: isFeatureActive( 'welcomeGuide' ),
 			isTemplateMode: _isTemplateMode,
-			// Post template fetch returns a 404 on classic themes, which
-			// messes with e2e tests, so we check it's a block theme first.
-			editedPostTemplate: supportsTemplateMode
-				? getEditedPostTemplate()
-				: {},
+			postContentBlock: getEditorSettings().postContentBlock,
 			wrapperBlockName: _wrapperBlockName,
 			wrapperUniqueId: getCurrentPostId(),
 		};
@@ -233,21 +200,6 @@ export default function VisualEditor( { styles } ) {
 		// Set default layout for classic themes so all alignments are supported.
 		return { type: 'default' };
 	}, [ isTemplateMode, themeSupportsLayout, globalLayoutSettings ] );
-
-	const postContentBlock = useMemo( () => {
-		// When in template editing mode, we can access the blocks directly.
-		if ( editedPostTemplate?.blocks ) {
-			return findPostContent( editedPostTemplate?.blocks );
-		}
-		// If there are no blocks, we have to parse the content string.
-		// Best double-check it's a string otherwise the parse function gets unhappy.
-		const parseableContent =
-			typeof editedPostTemplate?.content === 'string'
-				? editedPostTemplate?.content
-				: '';
-
-		return findPostContent( parse( parseableContent ) ) || {};
-	}, [ editedPostTemplate?.content, editedPostTemplate?.blocks ] );
 
 	const postContentLayoutClasses = useLayoutClasses( postContentBlock );
 
