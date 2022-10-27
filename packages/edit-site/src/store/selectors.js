@@ -429,7 +429,7 @@ export function getCurrentTemplateRevisionsCount( state ) {
 	if ( template.source === 'theme' ) {
 		return 0;
 	}
-	return ( template.revision_count ?? 0 ) + 1;
+	return ( template?._links?.['version-history']?.[ 0 ]?.count ?? 0 ) + 1;
 }
 
 /**
@@ -441,5 +441,5 @@ export function getCurrentTemplateRevisionsCount( state ) {
  * @return {?number} ID of the last revision.
  */
 export function getCurrentTemplateLastRevisionId( state ) {
-	return getCurrentTemplate( state ).latest_revision_id ?? null;
+	return getCurrentTemplate( state )?._links?.['predecessor-version']?.[ 0 ]?.id ?? null;
 }
