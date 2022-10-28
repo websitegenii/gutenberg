@@ -169,11 +169,11 @@ export default function CoverInspectorControls( {
 								value={ focalPoint }
 								onDragStart={ imperativeFocalPointPreview }
 								onDrag={ imperativeFocalPointPreview }
-								onChange={ ( newFocalPoint ) =>
+								onChange={ ( newFocalPoint ) => {
 									setAttributes( {
 										focalPoint: newFocalPoint,
-									} )
-								}
+									} );
+								} }
 							/>
 						) }
 						{ ! useFeaturedImage &&
