@@ -61,7 +61,7 @@ import useConvertClassicToBlockMenu, {
 import useCreateNavigationMenu from './use-create-navigation-menu';
 import { useInnerBlocks } from './use-inner-blocks';
 import useGeneratedSlug from './use-generated-slug';
-import { detectColors, isNumeric } from './utils';
+import { detectColors } from './utils';
 
 function Navigation( {
 	attributes,
@@ -98,10 +98,13 @@ function Navigation( {
 		icon = 'handle',
 	} = attributes;
 
-	const ref = attributes.slug || attributes.ref;
+	const ref = attributes.slug;
 
-	const setRef = ( postSlug ) => {
-		setAttributes( { slug: postSlug } );
+	const [ idRef, setIdRef ] = useState( attributes.ref );
+
+	const setRef = ( { id, slug } ) => {
+		setAttributes( { slug } );
+		setIdRef( id );
 	};
 
 	const recursionId = `navigationMenu/${ ref }`;
@@ -192,7 +195,6 @@ function Navigation( {
 		replaceInnerBlocks,
 		selectBlock,
 		__unstableMarkNextChangeAsNotPersistent,
-		__unstableMarkAutomaticChange,
 	} = useDispatch( blockEditorStore );
 
 	const [ hasSavedUnsavedInnerBlocks, setHasSavedUnsavedInnerBlocks ] =
@@ -217,6 +219,12 @@ function Navigation( {
 		isResolvingCanUserCreateNavigationMenu,
 		hasResolvedCanUserCreateNavigationMenu,
 	} = useNavigationMenu( ref );
+
+	useEffect( () => {
+		if ( navigationMenu ) {
+			setRef( navigationMenu );
+		}
+	}, [ navigationMenu ] );
 
 	const [ navigationEntityKind, navigationEntityType ] =
 		useNavigationEntityTypes( ref );
@@ -269,7 +277,7 @@ function Navigation( {
 		 *  nor to be undoable, hence why it is marked as non persistent
 		 */
 		__unstableMarkNextChangeAsNotPersistent();
-		setRef( fallbackNavigationMenus[ 0 ].slug );
+		setRef( fallbackNavigationMenus[ 0 ] );
 	}, [ navigationMenus ] );
 
 	useEffect( () => {
@@ -324,16 +332,6 @@ function Navigation( {
 
 	const isEntityAvailable =
 		! isNavigationMenuMissing && isNavigationMenuResolved;
-
-	// Migrate the numerical ID-based ref attribute to the
-	// string-based slug attribute. This action soft-deprecates
-	// usage of the ref attribute in favour of the slug attribute.
-	useEffect( () => {
-		if ( isEntityAvailable && isNumeric( ref ) ) {
-			setRef( navigationMenu?.slug );
-			__unstableMarkAutomaticChange();
-		}
-	}, [ isEntityAvailable, ref, navigationMenu ] );
 
 	// "loading" state:
 	// - there is a menu creation process in progress.
@@ -732,7 +730,7 @@ function Navigation( {
 							// Set some state used as a guard to prevent the creation of multiple posts.
 							setHasSavedUnsavedInnerBlocks( true );
 							// Switch to using the wp_navigation entity.
-							setRef( post.slug );
+							setRef( post );
 
 							showNavigationMenuStatusNotice(
 								__( `New Navigation Menu created.` )
@@ -865,13 +863,13 @@ function Navigation( {
 		<EntityProvider
 			kind={ navigationEntityKind }
 			type={ navigationEntityType }
-			id={ ref }
+			id={ idRef }
 		>
 			<RecursionProvider uniqueId={ recursionId }>
 				<InspectorControls>
 					<PanelBody title={ __( 'Menu' ) }>
 						<NavigationMenuSelector
-							currentMenuId={ ref }
+							currentMenuId={ idRef }
 							clientId={ clientId }
 							onSelectNavigationMenu={ ( menuRef ) => {
 								handleUpdateMenu( menuRef );
