@@ -109,7 +109,7 @@ function selectExistingMenu( select, recordKey, entityConfig ) {
 				include: recordKey, // fetch by post id.
 		  }
 		: {
-				name: recordKey, // fetch by slug (post_name).
+				slug: recordKey, // fetch by slug (post_name).
 		  };
 
 	// Find a **single** Navigation Menu using the appropriate
