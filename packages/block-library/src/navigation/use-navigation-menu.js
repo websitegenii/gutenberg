@@ -12,8 +12,12 @@ import { useSelect } from '@wordpress/data';
  */
 import useNavigationEntityTypes from './use-navigation-entity-types';
 
-export default function useNavigationMenu( recordKey ) {
-	const permissions = useResourcePermissions( 'navigation', recordKey );
+export default function useNavigationMenu( recordKey, navPostId ) {
+	// Permissions can only be fetched by Post ID. As the Nav block
+	// uses `slug` as the unique identifier attribute for a Navigation Post
+	// permissions will only become available once the initial fetch of
+	// the Navigation Menu Post has been issued. This is unavoidable.
+	const permissions = useResourcePermissions( 'navigation', navPostId );
 
 	const entityConfig = useNavigationEntityTypes( recordKey );
 
