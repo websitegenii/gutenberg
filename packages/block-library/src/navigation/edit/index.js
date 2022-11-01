@@ -98,7 +98,9 @@ function Navigation( {
 		icon = 'handle',
 	} = attributes;
 
-	const ref = attributes.slug;
+	// Older versions of the block used an ID based ref attribute.
+	// Allow for this to continue to be used.
+	const ref = attributes.slug || attributes.ref;
 
 	const [ idRef, setIdRef ] = useState( attributes.ref );
 

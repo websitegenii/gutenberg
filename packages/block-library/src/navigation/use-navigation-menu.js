@@ -11,6 +11,7 @@ import { useSelect } from '@wordpress/data';
  * Internal dependencies
  */
 import useNavigationEntityTypes from './use-navigation-entity-types';
+import { isNumeric } from './edit/utils';
 
 export default function useNavigationMenu( recordKey, navPostId ) {
 	// Permissions can only be fetched by Post ID. As the Nav block
@@ -103,14 +104,23 @@ function selectExistingMenu( select, recordKey, entityConfig ) {
 	const { getEntityRecords, getEditedEntityRecord, hasFinishedResolution } =
 		select( coreStore );
 
-	// Find a **single** Navigation Menu using the slug attribute
-	// as the identifier (i.e. recordKey).
+	const recordKeyQuery = isNumeric( recordKey )
+		? {
+				include: recordKey, // fetch by post id.
+		  }
+		: {
+				name: recordKey, // fetch by slug (post_name).
+		  };
+
+	// Find a **single** Navigation Menu using the appropriate
+	// recordKey as the identifier (i.e. recordKey). This may be
+	// either a slug or (for legacy blocks) as post ID.
 	// This call to `getEntityRecords` **must** be distinct from the
 	// call within the `selectNavigationMenus` (above) otherwise the
 	// query will return only `published` menus.
 	const navigationMenus = getEntityRecords( ...entityConfig, {
+		...recordKeyQuery,
 		per_page: 1, // only the 1 record is required.
-		name: recordKey, // fetch by slug (post_name).
 		status: [ 'publish', 'draft' ], // required to distinguish from primary `getEntityRecords` call.
 	} );
 
