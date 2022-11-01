@@ -43,6 +43,7 @@ function NavigationMenuSelector( {
 
 	const {
 		navigationMenus,
+		isResolvingNavigationMenus,
 		hasResolvedNavigationMenus,
 		canUserCreateNavigationMenu,
 		canSwitchNavigationMenu,
@@ -80,7 +81,7 @@ function NavigationMenuSelector( {
 
 	let selectorLabel = '';
 
-	if ( isCreatingMenu || ! hasResolvedNavigationMenus ) {
+	if ( isCreatingMenu || isResolvingNavigationMenus ) {
 		selectorLabel = __( 'Loading …' );
 	} else if ( noMenuSelected || noBlockMenus || menuUnavailable ) {
 		selectorLabel = __( 'Select menu' );
