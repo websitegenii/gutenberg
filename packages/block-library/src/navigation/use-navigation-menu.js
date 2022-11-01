@@ -144,7 +144,7 @@ function selectExistingMenu( select, recordKey, entityConfig ) {
 	// Only published Navigation posts are considered valid.
 	// Draft Navigation posts are valid only on the editor,
 	// requiring a post update to publish to show in frontend.
-	// To achieve that, index.php must recordKeylect this validation only for published.
+	// To achieve that, index.php must reflect this validation only for published.
 	const isNavigationMenuPublishedOrDraft =
 		editedNavigationMenu?.status === 'publish' ||
 		editedNavigationMenu?.status === 'draft';
@@ -156,7 +156,7 @@ function selectExistingMenu( select, recordKey, entityConfig ) {
 			( ! hasNavigationMenu || ! isNavigationMenuPublishedOrDraft ),
 
 		// getEditedEntityRecord will return the post regardless of status.
-		// TherecordKeyore if the found post is not published then we should ignore it.
+		// Therefore if the found post is not published then we should ignore it.
 		navigationMenu: isNavigationMenuPublishedOrDraft
 			? editedNavigationMenu
 			: null,
