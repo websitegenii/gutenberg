@@ -218,11 +218,16 @@ function Navigation( {
 		canUserCreateNavigationMenu,
 		isResolvingCanUserCreateNavigationMenu,
 		hasResolvedCanUserCreateNavigationMenu,
-	} = useNavigationMenu( ref );
+	} = useNavigationMenu( ref, idRef );
 
 	useEffect( () => {
 		if ( navigationMenu ) {
-			setRef( navigationMenu );
+			// Once a Navigation Menu has been retrieved
+			// by slug set a **local** state ID (the slug is
+			// already an attribute). The ID is required
+			// for further interactions with the entity
+			// such as edit/save.
+			setIdRef( navigationMenu?.id );
 		}
 	}, [ navigationMenu ] );
 
@@ -667,7 +672,8 @@ function Navigation( {
 				<InspectorControls>
 					<PanelBody title={ __( 'Menu' ) }>
 						<NavigationMenuSelector
-							currentMenuId={ ref }
+							currentMenuSlug={ ref }
+							currentMenuId={ idRef }
 							clientId={ clientId }
 							onSelectNavigationMenu={ ( menuRef ) => {
 								handleUpdateMenu( menuRef );
@@ -750,6 +756,7 @@ function Navigation( {
 				<InspectorControls>
 					<PanelBody title={ __( 'Menu' ) }>
 						<NavigationMenuSelector
+							currentMenuSlug={ null }
 							currentMenuId={ null }
 							clientId={ clientId }
 							onSelectNavigationMenu={ ( menuRef ) => {
@@ -870,6 +877,7 @@ function Navigation( {
 					<PanelBody title={ __( 'Menu' ) }>
 						<NavigationMenuSelector
 							currentMenuId={ idRef }
+							currentMenuSlug={ ref }
 							clientId={ clientId }
 							onSelectNavigationMenu={ ( menuRef ) => {
 								handleUpdateMenu( menuRef );

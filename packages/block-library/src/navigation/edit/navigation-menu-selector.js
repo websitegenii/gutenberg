@@ -23,6 +23,7 @@ import useNavigationEntities from '../use-navigation-entities';
 
 function NavigationMenuSelector( {
 	currentMenuId,
+	currentMenuSlug,
 	onSelectNavigationMenu,
 	onSelectClassicMenu,
 	onCreateNew,
@@ -49,7 +50,7 @@ function NavigationMenuSelector( {
 		isNavigationMenuResolved,
 		canUserCreateNavigationMenu,
 		canSwitchNavigationMenu,
-	} = useNavigationMenu( currentMenuId );
+	} = useNavigationMenu( currentMenuSlug, currentMenuId );
 
 	const [ currentTitle ] = useEntityProp(
 		'postType',
@@ -66,7 +67,7 @@ function NavigationMenuSelector( {
 		return (
 			navigationMenus?.map( ( { slug, title } ) => {
 				const label = decodeEntities( title.rendered );
-				if ( slug === currentMenuId && ! isCreatingMenu ) {
+				if ( slug === currentMenuSlug && ! isCreatingMenu ) {
 					setSelectorLabel( currentTitle );
 					setEnableOptions( shouldEnableMenuSelector );
 				}
@@ -84,6 +85,7 @@ function NavigationMenuSelector( {
 		createNavigationMenuIsSuccess,
 		isNavigationMenuResolved,
 		hasResolvedNavigationMenus,
+		shouldEnableMenuSelector,
 	] );
 
 	// If the currentMenuId is a postId then find it.
