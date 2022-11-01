@@ -34,7 +34,6 @@ function NavigationMenuSelector( {
 	/* translators: %s: The name of a menu. */
 	const createActionLabel = __( "Create from '%s'" );
 
-	const [ selectorLabel, setSelectorLabel ] = useState( '' );
 	const [ isPressed, setIsPressed ] = useState( false );
 	const [ enableOptions, setEnableOptions ] = useState( false );
 	const [ isCreatingMenu, setIsCreatingMenu ] = useState( false );
@@ -67,7 +66,7 @@ function NavigationMenuSelector( {
 			navigationMenus?.map( ( { id, title } ) => {
 				const label = decodeEntities( title.rendered );
 				if ( id === currentMenuId && ! isCreatingMenu ) {
-					setSelectorLabel( currentTitle );
+					// setSelectorLabel( currentTitle );
 					setEnableOptions( shouldEnableMenuSelector );
 				}
 				return {
@@ -96,11 +95,20 @@ function NavigationMenuSelector( {
 	const menuUnavailable =
 		hasResolvedNavigationMenus && currentMenuId === null;
 
+	let _selectorLabel = '';
+
+	if ( isCreatingMenu || ! hasResolvedNavigationMenus ) {
+		_selectorLabel = __( 'Loading …' );
+	} else if ( noMenuSelected || noBlockMenus || menuUnavailable ) {
+		_selectorLabel = __( 'Select menu' );
+	} else {
+		// Current Menu's title.
+		_selectorLabel = currentTitle;
+	}
+
 	useEffect( () => {
 		if ( ! hasResolvedNavigationMenus ) {
-			setSelectorLabel( __( 'Loading …' ) );
 		} else if ( noMenuSelected || noBlockMenus || menuUnavailable ) {
-			setSelectorLabel( __( 'Select menu' ) );
 			setEnableOptions( shouldEnableMenuSelector );
 		}
 
@@ -150,7 +158,7 @@ function NavigationMenuSelector( {
 				onClick={ () => {
 					onCreateNew();
 					setIsCreatingMenu( true );
-					setSelectorLabel( __( 'Loading …' ) );
+
 					setEnableOptions( false );
 				} }
 			>
@@ -162,8 +170,8 @@ function NavigationMenuSelector( {
 	return (
 		<DropdownMenu
 			className="wp-block-navigation__navigation-selector"
-			label={ selectorLabel }
-			text={ selectorLabel }
+			label={ _selectorLabel }
+			text={ _selectorLabel }
 			icon={ null }
 			toggleProps={ toggleProps }
 		>
@@ -187,9 +195,8 @@ function NavigationMenuSelector( {
 								return (
 									<MenuItem
 										onClick={ () => {
-											setSelectorLabel(
-												__( 'Loading …' )
-											);
+											// TODO - check whether these will be batched.
+											setIsCreatingMenu( true );
 											setEnableOptions( false );
 											onSelectClassicMenu( menu );
 											onClose();
@@ -214,7 +221,6 @@ function NavigationMenuSelector( {
 									onClose();
 									onCreateNew();
 									setIsCreatingMenu( true );
-									setSelectorLabel( __( 'Loading …' ) );
 									setEnableOptions( false );
 								} }
 							>
