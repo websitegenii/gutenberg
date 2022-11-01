@@ -35,7 +35,6 @@ function NavigationMenuSelector( {
 	const createActionLabel = __( "Create from '%s'" );
 
 	const [ isPressed, setIsPressed ] = useState( false );
-	const [ enableOptions, setEnableOptions ] = useState( false );
 	const [ isCreatingMenu, setIsCreatingMenu ] = useState( false );
 
 	actionLabel = actionLabel || createActionLabel;
@@ -45,7 +44,6 @@ function NavigationMenuSelector( {
 	const {
 		navigationMenus,
 		hasResolvedNavigationMenus,
-		isNavigationMenuResolved,
 		canUserCreateNavigationMenu,
 		canSwitchNavigationMenu,
 	} = useNavigationMenu();
@@ -56,19 +54,11 @@ function NavigationMenuSelector( {
 		'title'
 	);
 
-	const shouldEnableMenuSelector =
-		( canSwitchNavigationMenu || canUserCreateNavigationMenu ) &&
-		hasResolvedNavigationMenus &&
-		! isCreatingMenu;
-
 	const menuChoices = useMemo( () => {
 		return (
 			navigationMenus?.map( ( { id, title } ) => {
 				const label = decodeEntities( title.rendered );
-				if ( id === currentMenuId && ! isCreatingMenu ) {
-					// setSelectorLabel( currentTitle );
-					setEnableOptions( shouldEnableMenuSelector );
-				}
+
 				return {
 					value: id,
 					label,
@@ -76,14 +66,7 @@ function NavigationMenuSelector( {
 				};
 			} ) || []
 		);
-	}, [
-		currentTitle,
-		currentMenuId,
-		navigationMenus,
-		createNavigationMenuIsSuccess,
-		isNavigationMenuResolved,
-		hasResolvedNavigationMenus,
-	] );
+	}, [ navigationMenus ] );
 
 	const hasNavigationMenus = !! navigationMenus?.length;
 	const hasClassicMenus = !! classicMenus?.length;
@@ -95,23 +78,30 @@ function NavigationMenuSelector( {
 	const menuUnavailable =
 		hasResolvedNavigationMenus && currentMenuId === null;
 
-	let _selectorLabel = '';
+	let selectorLabel = '';
 
 	if ( isCreatingMenu || ! hasResolvedNavigationMenus ) {
-		_selectorLabel = __( 'Loading …' );
+		selectorLabel = __( 'Loading …' );
 	} else if ( noMenuSelected || noBlockMenus || menuUnavailable ) {
-		_selectorLabel = __( 'Select menu' );
+		selectorLabel = __( 'Select menu' );
 	} else {
 		// Current Menu's title.
-		_selectorLabel = currentTitle;
+		selectorLabel = currentTitle;
+	}
+
+	const shouldEnableMenuSelector =
+		( canSwitchNavigationMenu || canUserCreateNavigationMenu ) &&
+		hasResolvedNavigationMenus;
+
+	let enableOptions = false;
+
+	if ( isCreatingMenu ) {
+		enableOptions = false;
+	} else if ( shouldEnableMenuSelector ) {
+		enableOptions = true;
 	}
 
 	useEffect( () => {
-		if ( ! hasResolvedNavigationMenus ) {
-		} else if ( noMenuSelected || noBlockMenus || menuUnavailable ) {
-			setEnableOptions( shouldEnableMenuSelector );
-		}
-
 		if (
 			isCreatingMenu &&
 			( createNavigationMenuIsSuccess || createNavigationMenuIsError )
@@ -119,11 +109,9 @@ function NavigationMenuSelector( {
 			setIsCreatingMenu( false );
 		}
 	}, [
-		currentMenuId,
-		hasNavigationMenus,
-		hasResolvedNavigationMenus,
+		isCreatingMenu,
 		createNavigationMenuIsSuccess,
-		isNavigationMenuResolved,
+		createNavigationMenuIsError,
 	] );
 
 	toggleProps = {
@@ -158,8 +146,6 @@ function NavigationMenuSelector( {
 				onClick={ () => {
 					onCreateNew();
 					setIsCreatingMenu( true );
-
-					setEnableOptions( false );
 				} }
 			>
 				{ __( 'Create new menu' ) }
@@ -170,8 +156,8 @@ function NavigationMenuSelector( {
 	return (
 		<DropdownMenu
 			className="wp-block-navigation__navigation-selector"
-			label={ _selectorLabel }
-			text={ _selectorLabel }
+			label={ selectorLabel }
+			text={ selectorLabel }
 			icon={ null }
 			toggleProps={ toggleProps }
 		>
@@ -197,7 +183,7 @@ function NavigationMenuSelector( {
 										onClick={ () => {
 											// TODO - check whether these will be batched.
 											setIsCreatingMenu( true );
-											setEnableOptions( false );
+											// setEnableOptions( false );
 											onSelectClassicMenu( menu );
 											onClose();
 										} }
@@ -221,7 +207,7 @@ function NavigationMenuSelector( {
 									onClose();
 									onCreateNew();
 									setIsCreatingMenu( true );
-									setEnableOptions( false );
+									// setEnableOptions( false );
 								} }
 							>
 								{ __( 'Create new menu' ) }
