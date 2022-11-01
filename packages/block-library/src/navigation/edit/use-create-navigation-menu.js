@@ -108,7 +108,6 @@ export default function useCreateNavigationMenu( clientId ) {
 				}
 			)
 				.then( ( response ) => {
-					debugger;
 					setValue( response );
 					setStatus( CREATE_NAVIGATION_MENU_SUCCESS );
 					return response;
