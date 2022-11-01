@@ -65,9 +65,12 @@ function NavigationMenuSelector( {
 
 	const menuChoices = useMemo( () => {
 		return (
-			navigationMenus?.map( ( { slug, title } ) => {
+			navigationMenus?.map( ( { slug, title, id } ) => {
 				const label = decodeEntities( title.rendered );
-				if ( slug === currentMenuSlug && ! isCreatingMenu ) {
+				if (
+					( slug === currentMenuSlug || id === currentMenuId ) &&
+					! isCreatingMenu
+				) {
 					setSelectorLabel( currentTitle );
 					setEnableOptions( shouldEnableMenuSelector );
 				}
@@ -123,10 +126,12 @@ function NavigationMenuSelector( {
 		}
 	}, [
 		currentMenuId,
+		currentMenuSlug,
 		hasNavigationMenus,
 		hasResolvedNavigationMenus,
 		createNavigationMenuIsSuccess,
 		isNavigationMenuResolved,
+		shouldEnableMenuSelector,
 	] );
 
 	toggleProps = {
