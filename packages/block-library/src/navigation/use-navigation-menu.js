@@ -10,8 +10,8 @@ import { useSelect } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import useNavigationEntityTypes from './use-navigation-entity-types';
 import { isNumeric } from './edit/utils';
+import { DEFAULT_ENTITY_KIND, DEFAULT_ENTITY_TYPE } from './constants';
 
 export default function useNavigationMenu( recordKey, navPostId ) {
 	// Permissions can only be fetched by Post ID. As the Nav block
@@ -19,8 +19,6 @@ export default function useNavigationMenu( recordKey, navPostId ) {
 	// permissions will only become available once the initial fetch of
 	// the Navigation Menu Post has been issued. This is unavoidable.
 	const permissions = useResourcePermissions( 'navigation', navPostId );
-
-	const entityConfig = useNavigationEntityTypes( recordKey );
 
 	return useSelect(
 		( select ) => {
@@ -36,13 +34,13 @@ export default function useNavigationMenu( recordKey, navPostId ) {
 				navigationMenus,
 				isResolvingNavigationMenus,
 				hasResolvedNavigationMenus,
-			} = selectNavigationMenus( select, recordKey, entityConfig );
+			} = selectNavigationMenus( select, recordKey );
 
 			const {
 				navigationMenu,
 				isNavigationMenuResolved,
 				isNavigationMenuMissing,
-			} = selectExistingMenu( select, recordKey, entityConfig );
+			} = selectExistingMenu( select, recordKey );
 
 			return {
 				navigationMenus,
@@ -76,11 +74,15 @@ export default function useNavigationMenu( recordKey, navPostId ) {
 	);
 }
 
-function selectNavigationMenus( select, _recordKey, entityConfig ) {
+function selectNavigationMenus( select ) {
 	const { getEntityRecords, hasFinishedResolution, isResolving } =
 		select( coreStore );
 
-	const args = [ ...entityConfig, { per_page: -1, status: 'publish' } ];
+	const args = [
+		DEFAULT_ENTITY_KIND,
+		DEFAULT_ENTITY_TYPE,
+		{ per_page: -1, status: 'publish' },
+	];
 
 	return {
 		navigationMenus: getEntityRecords( ...args ),
@@ -92,7 +94,7 @@ function selectNavigationMenus( select, _recordKey, entityConfig ) {
 	};
 }
 
-function selectExistingMenu( select, recordKey, entityConfig ) {
+function selectExistingMenu( select, recordKey ) {
 	if ( ! recordKey ) {
 		return {
 			isNavigationMenuResolved: false,
@@ -118,11 +120,28 @@ function selectExistingMenu( select, recordKey, entityConfig ) {
 	// This call to `getEntityRecords` **must** be distinct from the
 	// call within the `selectNavigationMenus` (above) otherwise the
 	// query will return only `published` menus.
-	const navigationMenus = getEntityRecords( ...entityConfig, {
-		...recordKeyQuery,
-		per_page: 1, // only the 1 record is required.
-		status: [ 'publish', 'draft' ], // required to distinguish from primary `getEntityRecords` call.
-	} );
+	const navigationMenus = getEntityRecords(
+		DEFAULT_ENTITY_KIND,
+		DEFAULT_ENTITY_TYPE,
+		{
+			...recordKeyQuery,
+			per_page: 1, // only the 1 record is required.
+			status: [ 'publish', 'draft' ], // required to distinguish from primary `getEntityRecords` call.
+		}
+	);
+
+	const hasResolvedNavigationMenuSlugQuery = hasFinishedResolution(
+		'getEntityRecords',
+		[
+			DEFAULT_ENTITY_KIND,
+			DEFAULT_ENTITY_TYPE,
+			{
+				...recordKeyQuery,
+				per_page: 1, // only the 1 record is required.
+				status: [ 'publish', 'draft' ], // required to distinguish from primary `getEntityRecords` call.
+			},
+		]
+	);
 
 	const hasNavigationMenu = navigationMenus?.length;
 
@@ -130,16 +149,20 @@ function selectExistingMenu( select, recordKey, entityConfig ) {
 	// Perform subsequent lookups based on the ID of the record
 	// returned by the slug-based query (if available).
 	const idQueryArgs = hasNavigationMenu
-		? [ ...entityConfig, navigationMenus[ 0 ]?.id ]
+		? [ DEFAULT_ENTITY_KIND, DEFAULT_ENTITY_TYPE, navigationMenus[ 0 ]?.id ]
 		: [];
 
 	const editedNavigationMenu = hasNavigationMenu
 		? getEditedEntityRecord( ...idQueryArgs )
 		: null;
 
+	// "Resolved" in this case means either
+	// - the resolution state of request for the edited entity record
+	// (in the case there is an 0th Nav Post).
+	// - the resolution state of the query to look up with 0th post.
 	const hasResolvedNavigationMenu = hasNavigationMenu
 		? hasFinishedResolution( 'getEditedEntityRecord', idQueryArgs )
-		: null;
+		: hasResolvedNavigationMenuSlugQuery;
 
 	// Only published Navigation posts are considered valid.
 	// Draft Navigation posts are valid only on the editor,
@@ -149,7 +172,7 @@ function selectExistingMenu( select, recordKey, entityConfig ) {
 		editedNavigationMenu?.status === 'publish' ||
 		editedNavigationMenu?.status === 'draft';
 
-	const rtn = {
+	return {
 		isNavigationMenuResolved: hasResolvedNavigationMenu,
 		isNavigationMenuMissing:
 			hasResolvedNavigationMenu &&
@@ -161,6 +184,4 @@ function selectExistingMenu( select, recordKey, entityConfig ) {
 			? editedNavigationMenu
 			: null,
 	};
-
-	return rtn;
 }

@@ -14,6 +14,7 @@ import { useMemo } from '@wordpress/element';
  * Internal dependencies
  */
 import PlaceholderPreview from './placeholder/placeholder-preview';
+import { DEFAULT_ENTITY_KIND, DEFAULT_ENTITY_TYPE } from '../constants';
 
 const ALLOWED_BLOCKS = [
 	'core/navigation-link',
@@ -40,8 +41,6 @@ export default function NavigationInnerBlocks( {
 	clientId,
 	hasCustomPlaceholder,
 	orientation,
-	kind,
-	type,
 	templateLock,
 } ) {
 	const {
@@ -72,7 +71,10 @@ export default function NavigationInnerBlocks( {
 		[ clientId ]
 	);
 
-	const [ blocks, onInput, onChange ] = useEntityBlockEditor( kind, type );
+	const [ blocks, onInput, onChange ] = useEntityBlockEditor(
+		DEFAULT_ENTITY_KIND,
+		DEFAULT_ENTITY_TYPE
+	);
 
 	const shouldDirectInsert = useMemo(
 		() =>

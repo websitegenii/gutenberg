@@ -42,7 +42,6 @@ import { close, Icon } from '@wordpress/icons';
  */
 import useNavigationMenu from '../use-navigation-menu';
 import useNavigationEntities from '../use-navigation-entities';
-import useNavigationEntityTypes from '../use-navigation-entity-types';
 import Placeholder from './placeholder';
 import ResponsiveWrapper from './responsive-wrapper';
 import NavigationInnerBlocks from './inner-blocks';
@@ -62,6 +61,7 @@ import useCreateNavigationMenu from './use-create-navigation-menu';
 import { useInnerBlocks } from './use-inner-blocks';
 import useGeneratedSlug from './use-generated-slug';
 import { detectColors } from './utils';
+import { DEFAULT_ENTITY_KIND, DEFAULT_ENTITY_TYPE } from '../constants';
 
 function Navigation( {
 	attributes,
@@ -232,9 +232,6 @@ function Navigation( {
 			setIdRef( navigationMenu?.id );
 		}
 	}, [ navigationMenu ] );
-
-	const [ navigationEntityKind, navigationEntityType ] =
-		useNavigationEntityTypes( ref );
 
 	const navMenuResolvedButMissing =
 		hasResolvedNavigationMenus && isNavigationMenuMissing;
@@ -870,8 +867,8 @@ function Navigation( {
 
 	return (
 		<EntityProvider
-			kind={ navigationEntityKind }
-			type={ navigationEntityType }
+			kind={ DEFAULT_ENTITY_KIND }
+			type={ DEFAULT_ENTITY_TYPE }
 			id={ idRef }
 		>
 			<RecursionProvider uniqueId={ recursionId }>
@@ -925,16 +922,11 @@ function Navigation( {
 					<InspectorControls __experimentalGroup="advanced">
 						{ hasResolvedCanUserUpdateNavigationMenu &&
 							canUserUpdateNavigationMenu && (
-								<NavigationMenuNameControl
-									kind={ navigationEntityKind }
-									type={ navigationEntityType }
-								/>
+								<NavigationMenuNameControl />
 							) }
 						{ hasResolvedCanUserDeleteNavigationMenu &&
 							canUserDeleteNavigationMenu && (
 								<NavigationMenuDeleteControl
-									kind={ navigationEntityKind }
-									type={ navigationEntityType }
 									onDelete={ ( deletedMenuTitle = '' ) => {
 										replaceInnerBlocks( clientId, [] );
 										showNavigationMenuStatusNotice(
@@ -975,8 +967,6 @@ function Navigation( {
 							{ isEntityAvailable && (
 								<NavigationInnerBlocks
 									clientId={ clientId }
-									kind={ navigationEntityKind }
-									type={ navigationEntityType }
 									hasCustomPlaceholder={
 										!! CustomPlaceholder
 									}
