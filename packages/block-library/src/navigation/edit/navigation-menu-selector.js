@@ -137,7 +137,11 @@ function NavigationMenuSelector( {
 		},
 	};
 
-	if ( ! hasNavigationMenus && ! hasClassicMenus ) {
+	if (
+		hasResolvedNavigationMenus &&
+		! hasNavigationMenus &&
+		! hasClassicMenus
+	) {
 		return (
 			<Button
 				className="wp-block-navigation__navigation-selector-button--createnew"
