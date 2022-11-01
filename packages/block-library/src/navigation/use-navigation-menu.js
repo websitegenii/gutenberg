@@ -12,10 +12,10 @@ import { useSelect } from '@wordpress/data';
  */
 import useNavigationEntityTypes from './use-navigation-entity-types';
 
-export default function useNavigationMenu( ref ) {
-	const permissions = useResourcePermissions( 'navigation', ref );
+export default function useNavigationMenu( recordKey ) {
+	const permissions = useResourcePermissions( 'navigation', recordKey );
 
-	const entityConfig = useNavigationEntityTypes( ref );
+	const entityConfig = useNavigationEntityTypes( recordKey );
 
 	return useSelect(
 		( select ) => {
@@ -31,13 +31,13 @@ export default function useNavigationMenu( ref ) {
 				navigationMenus,
 				isResolvingNavigationMenus,
 				hasResolvedNavigationMenus,
-			} = selectNavigationMenus( select, ref, entityConfig );
+			} = selectNavigationMenus( select, recordKey, entityConfig );
 
 			const {
 				navigationMenu,
 				isNavigationMenuResolved,
 				isNavigationMenuMissing,
-			} = selectExistingMenu( select, ref, entityConfig );
+			} = selectExistingMenu( select, recordKey, entityConfig );
 
 			return {
 				navigationMenus,
@@ -48,7 +48,7 @@ export default function useNavigationMenu( ref ) {
 				isNavigationMenuResolved,
 				isNavigationMenuMissing,
 
-				canSwitchNavigationMenu: ref
+				canSwitchNavigationMenu: recordKey
 					? navigationMenus?.length > 1
 					: navigationMenus?.length > 0,
 
@@ -57,21 +57,21 @@ export default function useNavigationMenu( ref ) {
 				hasResolvedCanUserCreateNavigationMenu: hasResolved,
 
 				canUserUpdateNavigationMenu: canUpdate,
-				hasResolvedCanUserUpdateNavigationMenu: ref
+				hasResolvedCanUserUpdateNavigationMenu: recordKey
 					? hasResolved
 					: undefined,
 
 				canUserDeleteNavigationMenu: canDelete,
-				hasResolvedCanUserDeleteNavigationMenu: ref
+				hasResolvedCanUserDeleteNavigationMenu: recordKey
 					? hasResolved
 					: undefined,
 			};
 		},
-		[ ref, permissions ]
+		[ recordKey, permissions ]
 	);
 }
 
-function selectNavigationMenus( select, _ref, entityConfig ) {
+function selectNavigationMenus( select, _recordKey, entityConfig ) {
 	const { getEntityRecords, hasFinishedResolution, isResolving } =
 		select( coreStore );
 
@@ -87,8 +87,8 @@ function selectNavigationMenus( select, _ref, entityConfig ) {
 	};
 }
 
-function selectExistingMenu( select, ref, entityConfig ) {
-	if ( ! ref ) {
+function selectExistingMenu( select, recordKey, entityConfig ) {
+	if ( ! recordKey ) {
 		return {
 			isNavigationMenuResolved: false,
 			isNavigationMenuMissing: true,
@@ -99,46 +99,50 @@ function selectExistingMenu( select, ref, entityConfig ) {
 	const { getEntityRecords, getEditedEntityRecord, hasFinishedResolution } =
 		select( coreStore );
 
+	// Find a **single** Navigation Menu using the slug attribute
+	// as the identifier (i.e. recordKey).
 	const navigationMenus = getEntityRecords( ...entityConfig, {
 		per_page: 1, // only the 1 record is required.
-		name: ref, // fetch by slug
+		name: recordKey, // fetch by slug (post_name).
 	} );
 
 	const hasNavigationMenu = navigationMenus?.length;
-	let args = [];
 
-	if ( hasNavigationMenu ) {
-		args = [ ...entityConfig, navigationMenus[ 0 ]?.id ];
-
-		console.log( { args } );
-	}
+	// `wp_navigation` entities are keyed by Post ID in state.
+	// Perform subsequent lookups based on the ID of the record
+	// returned by the slug-based query (if available).
+	const idQueryArgs = hasNavigationMenu
+		? [ ...entityConfig, navigationMenus[ 0 ]?.id ]
+		: [];
 
 	const editedNavigationMenu = hasNavigationMenu
-		? getEditedEntityRecord( ...args )
+		? getEditedEntityRecord( ...idQueryArgs )
 		: null;
 
 	const hasResolvedNavigationMenu = hasNavigationMenu
-		? hasFinishedResolution( 'getEditedEntityRecord', args )
+		? hasFinishedResolution( 'getEditedEntityRecord', idQueryArgs )
 		: null;
 
 	// Only published Navigation posts are considered valid.
 	// Draft Navigation posts are valid only on the editor,
 	// requiring a post update to publish to show in frontend.
-	// To achieve that, index.php must reflect this validation only for published.
+	// To achieve that, index.php must recordKeylect this validation only for published.
 	const isNavigationMenuPublishedOrDraft =
 		editedNavigationMenu?.status === 'publish' ||
 		editedNavigationMenu?.status === 'draft';
 
-	return {
+	const rtn = {
 		isNavigationMenuResolved: hasResolvedNavigationMenu,
 		isNavigationMenuMissing:
 			hasResolvedNavigationMenu &&
 			( ! hasNavigationMenu || ! isNavigationMenuPublishedOrDraft ),
 
 		// getEditedEntityRecord will return the post regardless of status.
-		// Therefore if the found post is not published then we should ignore it.
+		// TherecordKeyore if the found post is not published then we should ignore it.
 		navigationMenu: isNavigationMenuPublishedOrDraft
 			? editedNavigationMenu
 			: null,
 	};
+
+	return rtn;
 }
