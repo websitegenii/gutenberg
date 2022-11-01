@@ -59,7 +59,7 @@ import useConvertClassicToBlockMenu, {
 } from './use-convert-classic-menu-to-block-menu';
 import useCreateNavigationMenu from './use-create-navigation-menu';
 import { useInnerBlocks } from './use-inner-blocks';
-import useGeneratedSlug from './use-generated-slug';
+
 import { detectColors } from './utils';
 import { DEFAULT_ENTITY_KIND, DEFAULT_ENTITY_TYPE } from '../constants';
 
@@ -113,8 +113,6 @@ function Navigation( {
 	const hasAlreadyRendered = useHasRecursion( recursionId );
 	const { editEntityRecord } = useDispatch( coreStore );
 
-	const generatedSlug = useGeneratedSlug( clientId );
-
 	// Preload classic menus, so that they don't suddenly pop-in when viewing
 	// the Select Menu dropdown.
 	const { menus: classicMenus } = useNavigationEntities();
@@ -152,7 +150,7 @@ function Navigation( {
 	} = useCreateNavigationMenu( clientId );
 
 	const createUntitledEmptyNavigationMenu = () =>
-		void createNavigationMenu( '', [], null, generatedSlug );
+		void createNavigationMenu( '', [], null );
 
 	useEffect( () => {
 		hideNavigationMenuStatusNotice();
