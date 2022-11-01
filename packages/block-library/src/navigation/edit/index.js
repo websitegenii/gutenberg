@@ -160,7 +160,7 @@ function Navigation( {
 		}
 
 		if ( createNavigationMenuIsSuccess ) {
-			handleUpdateMenu( createNavigationMenuPost.slug, {
+			handleUpdateMenu( createNavigationMenuPost, {
 				focusNavigationBlock: true,
 			} );
 
@@ -390,11 +390,11 @@ function Navigation( {
 	const [ detectedOverlayColor, setDetectedOverlayColor ] = useState();
 
 	const handleUpdateMenu = (
-		menuRef,
+		navPost,
 		options = { focusNavigationBlock: false }
 	) => {
 		const { focusNavigationBlock } = options;
-		setRef( menuRef );
+		setRef( navPost );
 		if ( focusNavigationBlock ) {
 			selectBlock( clientId );
 		}
@@ -685,7 +685,7 @@ function Navigation( {
 									'draft'
 								);
 								if ( navMenu ) {
-									handleUpdateMenu( navMenu.slug, {
+									handleUpdateMenu( navMenu, {
 										focusNavigationBlock: true,
 									} );
 								}
@@ -769,7 +769,7 @@ function Navigation( {
 									'draft'
 								);
 								if ( navMenu ) {
-									handleUpdateMenu( navMenu.slug, {
+									handleUpdateMenu( navMenu, {
 										focusNavigationBlock: true,
 									} );
 								}
@@ -855,7 +855,7 @@ function Navigation( {
 							'draft'
 						);
 						if ( navMenu ) {
-							handleUpdateMenu( navMenu.slug, {
+							handleUpdateMenu( navMenu, {
 								focusNavigationBlock: true,
 							} );
 						}
@@ -889,7 +889,7 @@ function Navigation( {
 									'draft'
 								);
 								if ( navMenu ) {
-									handleUpdateMenu( navMenu.slug, {
+									handleUpdateMenu( navMenu, {
 										focusNavigationBlock: true,
 									} );
 								}

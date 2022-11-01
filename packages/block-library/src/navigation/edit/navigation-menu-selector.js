@@ -81,6 +81,7 @@ function NavigationMenuSelector( {
 	}, [
 		currentTitle,
 		currentMenuId,
+		currentMenuSlug,
 		navigationMenus,
 		createNavigationMenuIsSuccess,
 		isNavigationMenuResolved,
@@ -183,8 +184,11 @@ function NavigationMenuSelector( {
 						<MenuGroup label={ __( 'Menus' ) }>
 							<MenuItemsChoice
 								value={ selectedMenuSlug }
-								onSelect={ ( menuRef ) => {
-									onSelectNavigationMenu( menuRef );
+								onSelect={ ( menuSlug ) => {
+									const menuPost = navigationMenus?.find(
+										( menu ) => menu.slug === menuSlug
+									);
+									onSelectNavigationMenu( menuPost );
 								} }
 								choices={ menuChoices }
 							/>
