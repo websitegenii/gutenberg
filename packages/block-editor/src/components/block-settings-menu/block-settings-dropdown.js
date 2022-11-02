@@ -204,6 +204,7 @@ export function BlockSettingsDropdown( {
 				onInsertBefore,
 				onRemove,
 				onCopy,
+				onPasteStyles,
 				onMoveTo,
 				blocks,
 			} ) => (
@@ -250,6 +251,9 @@ export function BlockSettingsDropdown( {
 									blocks={ blocks }
 									onCopy={ onCopy }
 								/>
+								<MenuItem onClick={ onPasteStyles }>
+									{ __( 'Paste styles' ) }
+								</MenuItem>
 								{ canDuplicate && (
 									<MenuItem
 										onClick={ pipe(
