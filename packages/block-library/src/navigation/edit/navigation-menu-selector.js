@@ -98,8 +98,8 @@ function NavigationMenuSelector( {
 
 	if ( isCreatingMenu ) {
 		enableOptions = false;
-	} else if ( shouldEnableMenuSelector ) {
-		enableOptions = true;
+	} else {
+		enableOptions = shouldEnableMenuSelector;
 	}
 
 	useEffect( () => {
