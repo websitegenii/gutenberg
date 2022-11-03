@@ -224,13 +224,21 @@ function Navigation( {
 	useEffect( () => {
 		if ( navigationMenu ) {
 			// Once a Navigation Menu has been retrieved
-			// by slug set a **local** state ID (the slug is
+			// by slug or ID set a **local** state ID (the slug is
 			// already an attribute). The ID is required
 			// for further interactions with the entity
 			// such as edit/save.
 			setIdRef( navigationMenu?.id );
 		}
 	}, [ navigationMenu ] );
+
+	useEffect( () => {
+		// Once a slug is available then remove any
+		// legacy references to ID based `ref`.
+		if ( attributes.slug && attributes.ref ) {
+			setAttributes( { ref: null } );
+		}
+	}, [ attributes.slug, attributes.ref ] );
 
 	const navMenuResolvedButMissing =
 		hasResolvedNavigationMenus && isNavigationMenuMissing;
