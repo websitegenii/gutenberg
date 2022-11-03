@@ -81,7 +81,7 @@ function selectNavigationMenus( select ) {
 	const args = [
 		DEFAULT_ENTITY_KIND,
 		DEFAULT_ENTITY_TYPE,
-		{ per_page: -1, status: 'publish' },
+		{ per_page: -1, status: [ 'publish', 'draft' ] },
 	];
 
 	return {
