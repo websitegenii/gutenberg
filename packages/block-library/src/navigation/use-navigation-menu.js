@@ -99,7 +99,7 @@ function selectExistingMenu( select, recordKey ) {
 		return {
 			isNavigationMenuResolved: false,
 			isNavigationMenuMissing: true,
-			navigationMenu: null,
+			navigationMenu: undefined,
 		};
 	}
 
