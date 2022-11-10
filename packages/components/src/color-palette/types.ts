@@ -9,8 +9,6 @@ import type { CSSProperties, MouseEventHandler, ReactNode } from 'react';
 import type { PopoverProps } from '../popover/types';
 import type { HeadingSize } from '../heading/types';
 
-type OnColorChange = ( newColor?: string ) => void;
-
 export type ColorObject = {
 	name: string;
 	color: NonNullable< CSSProperties[ 'color' ] >;
