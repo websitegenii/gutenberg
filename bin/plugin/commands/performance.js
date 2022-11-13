@@ -450,7 +450,7 @@ async function runPerformanceTests( branches, options ) {
 
 	fs.writeFileSync(
 		'/home/runner/perf-test-results.json',
-		JSON.stringify( results, null, 2 ),
+		JSON.stringify( rawResults, null, 2 ),
 		'utf8'
 	);
 
