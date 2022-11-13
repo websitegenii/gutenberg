@@ -448,6 +448,12 @@ async function runPerformanceTests( branches, options ) {
 		'\nPlease note that client side metrics EXCLUDE the server response time.\n'
 	);
 
+	fs.writeFileSync(
+		'/home/runner/perf-test-results.json',
+		JSON.stringify( results, null, 2 ),
+		'utf8'
+	);
+
 	for ( const testSuite of testSuites ) {
 		log( `\n>> ${ testSuite }\n` );
 
