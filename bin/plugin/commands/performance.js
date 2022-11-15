@@ -201,7 +201,7 @@ async function runTestSuite( testSuite, branchName, performanceTestDirectory ) {
 				.map( ( name ) => rawResults[ name ][ i ] )
 				.join( ',' );
 
-			output += `${ testSuite },${ branchName },${ measurements }`;
+			output += `${ testSuite },${ branchName },${ measurements }\n`;
 		}
 
 		// we do not need to wait for this to finish
@@ -220,6 +220,12 @@ async function runTestSuite( testSuite, branchName, performanceTestDirectory ) {
 async function runPerformanceTests( branches, options ) {
 	const runningInCI = !! process.env.CI || !! options.ci;
 	const TEST_ROUNDS = options.rounds || 1;
+
+	if ( RESULTS_FILE ) {
+		const metrics = rawMetricNames.join( ',' );
+		const output = `suite,branch,${ metrics }\n`;
+		fs.writeFileSync( RESULTS_FILE, output );
+	}
 
 	// The default value doesn't work because commander provides an array.
 	if ( branches.length === 0 ) {
