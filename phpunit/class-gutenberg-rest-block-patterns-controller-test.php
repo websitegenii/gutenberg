@@ -40,15 +40,17 @@ class Gutenberg_REST_Block_Patterns_Controller_Test extends WP_Test_REST_Control
 				'categories'    => array( 'test' ),
 				'viewportWidth' => 1440,
 				'content'       => '<!-- wp:heading {"level":1} --><h1>One</h1><!-- /wp:heading -->',
+				'templateTypes' => array( 'page' ),
 			)
 		);
 
 		$test_registry->register(
 			'test/two',
 			array(
-				'title'      => 'Pattern Two',
-				'categories' => array( 'test' ),
-				'content'    => '<!-- wp:paragraph --><p>Two</p><!-- /wp:paragraph -->',
+				'title'         => 'Pattern Two',
+				'categories'    => array( 'test' ),
+				'content'       => '<!-- wp:paragraph --><p>Two</p><!-- /wp:paragraph -->',
+				'templateTypes' => array( 'single' ),
 			)
 		);
 	}
@@ -75,10 +77,10 @@ class Gutenberg_REST_Block_Patterns_Controller_Test extends WP_Test_REST_Control
 		wp_set_current_user( self::$admin_id );
 
 		$expected_names  = array( 'test/one', 'test/two' );
-		$expected_fields = array( 'name', 'content' );
+		$expected_fields = array( 'name', 'content', 'template_types' );
 
 		$request            = new WP_REST_Request( 'GET', '/wp/v2/block-patterns/patterns' );
-		$request['_fields'] = 'name,content';
+		$request['_fields'] = 'name,content,template_types';
 		$response           = rest_get_server()->dispatch( $request );
 		$data               = $response->get_data();
 

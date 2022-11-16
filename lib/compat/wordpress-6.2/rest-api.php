@@ -83,3 +83,12 @@ function gutenberg_pattern_directory_collection_params_6_2( $query_params ) {
 	return $query_params;
 }
 add_filter( 'rest_pattern_directory_collection_params', 'gutenberg_pattern_directory_collection_params_6_2' );
+
+/**
+ * Registers the block patterns REST API routes.
+ */
+function gutenberg_register_gutenberg_rest_block_patterns() {
+	$block_patterns = new Gutenberg_REST_Block_Patterns_Controller();
+	$block_patterns->register_routes();
+}
+add_action( 'rest_api_init', 'gutenberg_register_gutenberg_rest_block_patterns', 100 );

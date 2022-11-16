@@ -129,6 +129,7 @@ class Gutenberg_REST_Block_Patterns_Controller extends WP_REST_Controller {
 			'keywords'      => 'keywords',
 			'content'       => 'content',
 			'inserter'      => 'inserter',
+			'templateTypes' => 'template_types',
 		);
 		$data   = array();
 		foreach ( $keys as $item_key => $rest_key ) {
@@ -200,6 +201,12 @@ class Gutenberg_REST_Block_Patterns_Controller extends WP_REST_Controller {
 				),
 				'keywords'       => array(
 					'description' => __( 'The pattern keywords.', 'gutenberg' ),
+					'type'        => 'array',
+					'readonly'    => true,
+					'context'     => array( 'view', 'edit', 'embed' ),
+				),
+				'template_types' => array(
+					'description' => __( 'An array of template types where the pattern fits.', 'gutenberg' ),
 					'type'        => 'array',
 					'readonly'    => true,
 					'context'     => array( 'view', 'edit', 'embed' ),
