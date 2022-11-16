@@ -41,7 +41,6 @@
 		"src/**/test/**.js", // only exclude js files, ts{x} files should be checked
 		"src/index.js",
 		"src/alignment-matrix-control",
-		"src/angle-picker-control",
 		"src/autocomplete",
 		"src/box-control",
 		"src/color-list-picker",
