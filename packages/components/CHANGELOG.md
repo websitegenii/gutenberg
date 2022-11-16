@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Internal
+
+-   `AnglePickerControl`: Convert to TypeScript ([#45820](https://github.com/WordPress/gutenberg/pull/45820)).
+
 ## 22.1.0 (2022-11-16)
 
 ### Enhancements
