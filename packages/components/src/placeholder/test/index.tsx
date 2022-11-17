@@ -119,7 +119,7 @@ describe( 'Placeholder', () => {
 					<div>Placeholder content</div>
 				</Placeholder>
 			);
-			const instructionsContainer = screen.getByRole( 'status' );
+			const instructionsContainer = screen.getByText( instructions );
 
 			expect( instructionsContainer ).toBeInTheDocument();
 		} );
