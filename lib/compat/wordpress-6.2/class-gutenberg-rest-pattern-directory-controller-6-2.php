@@ -164,6 +164,7 @@ class Gutenberg_REST_Pattern_Directory_Controller_6_2 extends Gutenberg_REST_Pat
 
 		$query_args['pattern-categories'] = isset( $request['category'] ) ? $request['category'] : false;
 		$query_args['pattern-keywords']   = isset( $request['keyword'] ) ? $request['keyword'] : false;
+		$query_args['allowed_blocks']     = isset( $request['allowed_blocks'] ) ? $request['allowed_blocks'] : false;
 
 		$query_args = array_filter( $query_args );
 
