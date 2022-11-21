@@ -2110,6 +2110,7 @@ export const __getAllowedCoreBlockNames = createSelector(
 		) {
 			return [ 'all' ];
 		}
+		allowedBlocksWithNestedBlocks.sort();
 		return allowedBlocksWithNestedBlocks;
 	},
 	( state, rootClientId ) => [
