@@ -39,19 +39,17 @@ class WP_Theme_JSON_Resolver_6_2 extends WP_Theme_JSON_Resolver_6_1 {
 	 *
 	 * @since 5.8.0
 	 * @since 5.9.0 Adapted to work with child themes, added the `$template` argument.
-	 * @deprecated 6.2.0 Use wp_get_theme()->get_file_path() instead.
+	 * @deprecated 6.2.0. Remove this method from core on 6.2 release. 
 	 *
 	 * @param string $file_name Name of the file.
 	 * @param bool   $template  Optional. Use template theme directory. Default false.
 	 * @return string The whole file path or empty if the file doesn't exist.
 	 */
 	protected static function get_file_path_from_theme( $file_name, $template = false ) {
-		_deprecated_function( __METHOD__, '6.2.0', 'wp_get_theme()->get_file_path()' );
-		$theme = wp_get_theme();
-		if ( $template && $theme->parent() ) {
-			$theme = $theme->parent();
-		}
-		$candidate = $theme->get_file_path( $file_name );
+		// TODO: Remove this method from core on 6.2 release.
+		_deprecated_function( __METHOD__, '6.2.0' );
+		$path      = $template ? get_template_directory() : get_stylesheet_directory();
+		$candidate = $path . '/' . $file_name;
 
 		return is_readable( $candidate ) ? $candidate : '';
 	}
