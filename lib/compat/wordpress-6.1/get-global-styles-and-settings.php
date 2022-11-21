@@ -66,6 +66,7 @@ function gutenberg_add_global_styles_for_blocks() {
  * @return string Stylesheet.
  */
 function gutenberg_get_global_stylesheet( $types = array() ) {
+	$stylesheet = get_stylesheet();
 	// Return cached value if it can be used and exists.
 	// It's cached by theme to make sure that theme switching clears the cache.
 	$can_use_cached = (
@@ -75,7 +76,7 @@ function gutenberg_get_global_stylesheet( $types = array() ) {
 		( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) &&
 		! is_admin()
 	);
-	$transient_name = 'gutenberg_global_styles_' . get_stylesheet();
+	$transient_name = 'gutenberg_global_styles_' . $stylesheet;
 	if ( $can_use_cached ) {
 		$cached = get_transient( $transient_name );
 		if ( $cached ) {
@@ -83,7 +84,7 @@ function gutenberg_get_global_stylesheet( $types = array() ) {
 		}
 	}
 	$tree                = WP_Theme_JSON_Resolver_Gutenberg::get_merged_data();
-	$supports_theme_json = wp_theme_has_theme_json();
+	$supports_theme_json = wp_theme_has_theme_json( $stylesheet );
 	if ( empty( $types ) && ! $supports_theme_json ) {
 		$types = array( 'variables', 'presets', 'base-layout-styles' );
 	} elseif ( empty( $types ) ) {

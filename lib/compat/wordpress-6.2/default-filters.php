@@ -17,6 +17,7 @@
  * @package gutenberg
  */
 
-add_action( 'switch_theme', 'wp_theme_has_theme_json_clean_cache' );
-add_action( 'start_previewing_theme', 'wp_theme_has_theme_json_clean_cache' );
+add_action( 'switch_theme', '_wp_theme_has_theme_json_clean_cache_switch_theme', 10, 3 );
+add_action( 'delete_theme', 'wp_theme_has_theme_json_clean_cache', 10, 3 );
+add_action( 'start_previewing_theme', '_wp_theme_has_theme_json_clean_cache_start_previewing_theme' );
 add_action( 'upgrader_process_complete', '_wp_theme_has_theme_json_clean_cache_upon_upgrading_active_theme', 10, 2 );
