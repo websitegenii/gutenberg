@@ -12,6 +12,8 @@ if ( ! function_exists( 'wp_theme_has_theme_json' ) ) {
 	 * The result would be cached via the WP_Object_Cache.
 	 * It can be cleared by calling wp_theme_has_theme_json_clean_cache().
 	 *
+	 * @param string $stylesheet Directory name for the theme. Optional. Defaults to current theme.
+	 *
 	 * @return boolean
 	 */
 	function wp_theme_has_theme_json( $stylesheet = '' ) {
