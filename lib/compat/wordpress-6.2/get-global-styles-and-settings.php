@@ -66,31 +66,6 @@ if ( ! function_exists( 'wp_theme_has_theme_json_clean_cache' ) ) {
 	}
 }
 
-if ( ! function_exists( '_wp_theme_has_theme_json_clean_cache_switch_theme' ) ) {
-	/**
-	 * Clean new and old themes on switch.
-	 *
-	 * @param string  $new_name Name of the new theme.
-	 * @param WP_Theme $new_theme WP_Theme instance of the new theme.
-	 * @param WP_Theme $old_theme WP_Theme instance of the old theme.
-	 */
-	function _wp_theme_has_theme_json_clean_cache_switch_theme( $new_name, $new_theme, $old_theme ) {
-		wp_theme_has_theme_json_clean_cache( $new_theme->get_stylesheet() );
-		wp_theme_has_theme_json_clean_cache( $old_theme->get_stylesheet() );
-	}
-}
-
-if ( ! function_exists( '_wp_theme_has_theme_json_clean_cache_start_previewing_theme' ) ) {
-	/**
-	 * Clear on preview.
-	 *
-	 * @param WP_Customize_Manager $manager WP_Customize_Manager instance.
-	 */
-	function _wp_theme_has_theme_json_clean_cache_start_previewing_theme( $manager ){
-		wp_theme_has_theme_json_clean_cache( $manager->get_stylesheet() );
-	}
-}
-
 if ( ! function_exists( '_wp_theme_has_theme_json_clean_cache_upon_upgrading_active_theme' ) ) {
 	/**
 	 * Private function to clean the cache used by wp_theme_has_theme_json method.
