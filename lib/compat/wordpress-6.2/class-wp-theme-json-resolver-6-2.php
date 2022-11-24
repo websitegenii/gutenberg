@@ -39,7 +39,7 @@ class WP_Theme_JSON_Resolver_6_2 extends WP_Theme_JSON_Resolver_6_1 {
 	 *
 	 * @since 5.8.0
 	 * @since 5.9.0 Adapted to work with child themes, added the `$template` argument.
-	 * @deprecated 6.2.0. Remove this method from core on 6.2 release. 
+	 * @deprecated 6.2.0. Remove this method from core on 6.2 release.
 	 *
 	 * @param string $file_name Name of the file.
 	 * @param bool   $template  Optional. Use template theme directory. Default false.

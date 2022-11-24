@@ -40,7 +40,7 @@ class WP_Theme_JSON_Resolver_Gutenberg extends WP_Theme_JSON_Resolver_6_2 {
 			if ( is_readable( $theme_json_file ) ) {
 				$theme_json_data = static::read_json_file( $theme_json_file );
 				$theme_json_data = static::translate( $theme_json_data, $wp_theme->get( 'TextDomain' ) );
-        $theme_json_data = gutenberg_add_registered_webfonts_to_theme_json( $theme_json_data );
+				$theme_json_data = gutenberg_add_registered_webfonts_to_theme_json( $theme_json_data );
 			} else {
 				$theme_json_data = array();
 			}
