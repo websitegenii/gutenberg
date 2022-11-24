@@ -40,10 +40,9 @@ function gutenberg_get_global_styles( $path = array(), $context = array() ) {
  * @return string
  */
 function gutenberg_get_global_styles_svg_filters() {
-	$stylesheet = get_stylesheet();
 	// Return cached value if it can be used and exists.
 	// It's cached by theme to make sure that theme switching clears the cache.
-	$transient_name = 'gutenberg_global_styles_svg_filters_' . $stylesheet;
+	$transient_name = 'gutenberg_global_styles_svg_filters_' . get_stylesheet();
 	$can_use_cached = (
 		( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) &&
 		( ! defined( 'SCRIPT_DEBUG' ) || ! SCRIPT_DEBUG ) &&
@@ -57,7 +56,7 @@ function gutenberg_get_global_styles_svg_filters() {
 		}
 	}
 
-	$supports_theme_json = wp_theme_has_theme_json( $stylesheet );
+	$supports_theme_json = wp_theme_has_theme_json();
 
 	$origins = array( 'default', 'theme', 'custom' );
 	if ( ! $supports_theme_json ) {
