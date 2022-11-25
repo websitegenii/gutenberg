@@ -58,7 +58,7 @@ page.getByRole( 'button', { name: 'Hello World' } );
 It's recommended to append `i` to the name attribute to match it case-insensitively wherever it makes sense. It can also be chained with built-in selector engines to perform complex queries:
 
 ```js
-// Select a button with a name ends with `Back` and is visible on the screen.
+// Select a button with a name that ends with `Back` and is visible on the screen.
 page.locator( 'role=button[name=/Back$/] >> visible=true' );
 // Select a button with the (exact) name "View options" under `#some-section`.
 page.locator( 'css=#some-section >> role=button[name="View options"]' );
@@ -76,7 +76,7 @@ To encourage better practices for querying elements, selectors are [strict](http
 <details>
 	<summary><h3>Don't overload test-utils, inline simple utils</h3></summary>
 
-`e2e-test-utils` are too bloated with too many utils. Most of them are simple enough to be inlined directly in tests. With the help of accessible selectors, simple utils are easier to write now. For utils that only take place on a certain page, use Page Object Model instead (with an exception of clearing states with `requestUtils` which are better placed in `e2e-test-utils`). Otherwise, only create an util if the action is complex and repetitive enough.
+`e2e-test-utils` are too bloated with too many utils. Most of them are simple enough to be inlined directly in tests. With the help of accessible selectors, simple utils are easier to write now. For utils that only take place on a certain page, use Page Object Model instead (with an exception of clearing states with `requestUtils` which are better placed in `e2e-test-utils`). Otherwise, only create a util if the action is complex and repetitive enough.
 </details>
 
 <details>
@@ -112,7 +112,7 @@ We can insert as many assertions in one test as needed. It's better to make expl
 
 ## Cross-browser testing
 
-By default, tests are only run in chromium. You can _tag_ tests to run them in different browsers. Use `@browser` anywhere in the test title to run it in that browser. Tests will always run in chromium by default, append `-chromium` to disable testing in chromium. Available browsers are `chromium`, `firefox`, and `webkit`.
+By default, tests are only run in chromium, append `-chromium` to disable testing in chromium. You can _tag_ tests to run them in different browsers. Use `@browser` anywhere in the test title to run it in that browser. Available browsers are `chromium`, `firefox`, and `webkit`.
 
 ```js
 test( 'I will run in @firefox and @webkit (and chromium by default)', async ( { page } ) => {
