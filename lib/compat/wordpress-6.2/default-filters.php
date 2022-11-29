@@ -16,7 +16,6 @@
  *
  * @package gutenberg
  */
-
 add_action( 'delete_theme', 'wp_theme_has_theme_json_clean_cache' );
 add_action( 'upgrader_process_complete', '_wp_theme_has_theme_json_clean_cache_upon_upgrading_active_theme', 10, 2 );
 add_action( 'save_post_wp_global_styles', array( 'WP_Theme_JSON_Resolver_Gutenberg', 'clean_cached_data' ) );
