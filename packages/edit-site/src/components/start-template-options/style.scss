@@ -1,0 +1,59 @@
+.edit-site-start-template-options__modal.components-modal__frame {
+	// To keep modal dimensions consistent as subsections are navigated, width
+	// and height are used instead of max-(width/height).
+	@include break-small() {
+		width: calc(100% - #{ $grid-unit-20 * 2 });
+		height: calc(100% - #{ $header-height * 2 });
+	}
+	@include break-medium() {
+		width: 70%;
+	}
+	@include break-large() {
+		height: fit-content;
+	}
+}
+
+// 2 column masonry layout.
+.edit-site-start-template-options__modal-content .block-editor-block-patterns-list {
+	display: flex;
+	width: 100%;
+	margin-top: $grid-unit-05;
+	gap: $grid-unit-10;
+
+	.block-editor-block-patterns-list__list-item {
+		break-inside: avoid-column;
+		margin-bottom: $grid-unit-30;
+		width: 240px;
+
+		> div {
+			width: 240px !important;
+		}
+
+		.block-editor-block-preview__container {
+			height: 320px;
+			width: 240px;
+		}
+
+		.block-editor-block-preview__content {
+			width: 100%;
+			position: absolute;
+		}
+	}
+
+	// The start blank pattern is the last and we are selecting it.
+	.block-editor-block-patterns-list__list-item:nth-last-child(2) {
+		.block-editor-block-patterns-list__item-title {
+			position: absolute;
+			padding: 0;
+			width: 100%;
+			top: 50%;
+			margin-top: -1em;
+		}
+		.block-editor-block-preview__container {
+			background: #f0f0f0;
+		}
+		iframe {
+			display: none;
+		}
+	}
+}

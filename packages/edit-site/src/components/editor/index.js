@@ -35,6 +35,7 @@ import useInitEditedEntityFromURL from '../use-init-edited-entity-from-url';
 import InserterSidebar from '../secondary-sidebar/inserter-sidebar';
 import ListViewSidebar from '../secondary-sidebar/list-view-sidebar';
 import WelcomeGuide from '../welcome-guide';
+import StartTemplateOptions from '../start-template-options';
 import { store as editSiteStore } from '../../store';
 import { GlobalStylesRenderer } from '../global-styles-renderer';
 import { GlobalStylesProvider } from '../global-styles/global-styles-provider';
@@ -183,6 +184,7 @@ export default function Editor() {
 				>
 					<GlobalStylesProvider>
 						<BlockContextProvider value={ blockContext }>
+							<StartTemplateOptions />
 							<InterfaceSkeleton
 								className={
 									showIconLabels && 'show-icon-labels'
