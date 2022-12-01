@@ -9,6 +9,7 @@
 ### Enhancements
 
 -   `TabPanel`: Add ability to set icon only tab buttons ([#45005](https://github.com/WordPress/gutenberg/pull/45005)).
+-   `AlignmentMatrixControl`: Update label on center cell ([#46236](https://github.com/WordPress/gutenberg/pull/46236)).
 
 ### Internal
 
@@ -20,7 +21,7 @@
 ### Enhancements
 
 -   `ColorPalette`, `BorderBox`, `BorderBoxControl`: polish and DRY prop types, add default values ([#45463](https://github.com/WordPress/gutenberg/pull/45463)).
--   `TabPanel`: Add ability to set icon only tab buttons ([#45005](https://github.com/WordPress/gutenberg/pull/45005)).
+-   `TabPanel`: Add ability to set icon only tab buttons ([#46236](https://github.com/WordPress/gutenberg/pull/45005)).
 
 ### Internal
 -   `AnglePickerControl`: remove `:focus-visible' outline on `CircleOutlineWrapper` ([#45758](https://github.com/WordPress/gutenberg/pull/45758))
