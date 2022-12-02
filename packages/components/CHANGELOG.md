@@ -13,10 +13,12 @@
 ### Bug Fix
 
 -   `ColorPalette`: show "Clear" button even when colors array is empty ([#46001](https://github.com/WordPress/gutenberg/pull/46001)).
+-   `NumberControl`: make sure `onChange`'s argument is always a `string` ([#45982](https://github.com/WordPress/gutenberg/pull/45982)).
 
 ### Enhancements
 
 -   `TabPanel`: Add ability to set icon only tab buttons ([#45005](https://github.com/WordPress/gutenberg/pull/45005)).
+-   `NumberControl`: tidy up internal types and remove `@ts-expect-error` comments ([#45982](https://github.com/WordPress/gutenberg/pull/45982)).
 -   `InputControl`, `NumberControl`, `UnitControl`: Add `help` prop for additional description ([#45931](https://github.com/WordPress/gutenberg/pull/45931)).
 -   `BorderControl`, `ColorPicker` & `QueryControls`: Replace bottom margin overrides with `__nextHasNoMarginBottom` ([#45985](https://github.com/WordPress/gutenberg/pull/45985)).
 -   `CustomSelectControl`, `UnitControl`: Add `onFocus` and `onBlur` props ([#46096](https://github.com/WordPress/gutenberg/pull/46096)).
