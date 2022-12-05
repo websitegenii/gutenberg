@@ -655,7 +655,6 @@ function Navigation( {
 				{ hasColorSettings && (
 					<>
 						<ColorGradientSettingsDropdown
-							__experimentalHasMultipleOrigins
 							__experimentalIsRenderedInSidebar
 							settings={ [
 								{

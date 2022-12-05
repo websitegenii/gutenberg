@@ -226,7 +226,6 @@ export default function CoverInspectorControls( {
 			</InspectorControls>
 			<InspectorControls __experimentalGroup="color">
 				<ColorGradientSettingsDropdown
-					__experimentalHasMultipleOrigins
 					__experimentalIsRenderedInSidebar
 					settings={ [
 						{
