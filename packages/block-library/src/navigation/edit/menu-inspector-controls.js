@@ -5,11 +5,7 @@ import {
 	__experimentalOffCanvasEditor as OffCanvasEditor,
 	InspectorControls,
 } from '@wordpress/block-editor';
-import {
-	PanelBody,
-	__experimentalHStack as HStack,
-	__experimentalHeading as Heading,
-} from '@wordpress/components';
+import { PanelBody, VisuallyHidden } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -18,54 +14,23 @@ import { __ } from '@wordpress/i18n';
 import ManageMenusButton from './manage-menus-button';
 import NavigationMenuSelector from './navigation-menu-selector';
 
-const WrappedNavigationMenuSelector = ( {
-	currentMenuId,
-	handleUpdateMenu,
-	convertClassicMenu,
-	onCreateNew,
-	createNavigationMenuIsSuccess,
-	createNavigationMenuIsError,
-} ) => (
-	<NavigationMenuSelector
-		currentMenuId={ currentMenuId }
-		onSelectNavigationMenu={ ( menuId ) => {
-			handleUpdateMenu( menuId );
-		} }
-		onSelectClassicMenu={ async ( classicMenu ) => {
-			const navMenu = await convertClassicMenu(
-				classicMenu.id,
-				classicMenu.name,
-				'draft'
-			);
-			if ( navMenu ) {
-				handleUpdateMenu( navMenu.id, {
-					focusNavigationBlock: true,
-				} );
-			}
-		} }
-		onCreateNew={ onCreateNew }
-		createNavigationMenuIsSuccess={ createNavigationMenuIsSuccess }
-		createNavigationMenuIsError={ createNavigationMenuIsError }
-		/* translators: %s: The name of a menu. */
-		actionLabel={ __( "Switch to '%s'" ) }
-	/>
-);
 const MenuInspectorControls = ( {
-	convertClassicMenu,
 	createNavigationMenuIsSuccess,
 	createNavigationMenuIsError,
 	currentMenuId = null,
-	handleUpdateMenu,
-	isNavigationMenuMissing,
 	innerBlocks,
 	isManageMenusButtonDisabled,
 	onCreateNew,
+	onSelectClassicMenu,
+	onSelectNavigationMenu,
 } ) => {
 	const isOffCanvasNavigationEditorEnabled =
 		window?.__experimentalEnableOffCanvasNavigationEditor === true;
 	const menuControlsSlot = window?.__experimentalEnableBlockInspectorTabs
 		? 'list'
 		: undefined;
+	/* translators: %s: The name of a menu. */
+	const actionLabel = __( "Switch to '%s'" );
 
 	return (
 		<InspectorControls __experimentalGroup={ menuControlsSlot }>
@@ -74,57 +39,37 @@ const MenuInspectorControls = ( {
 					isOffCanvasNavigationEditorEnabled ? null : __( 'Menu' )
 				}
 			>
-				{ isOffCanvasNavigationEditorEnabled ? (
-					<>
-						<HStack className="wp-block-navigation-off-canvas-editor__header">
-							<Heading
-								className="wp-block-navigation-off-canvas-editor__title"
-								level={ 2 }
-							>
-								{ __( 'Menu' ) }
-							</Heading>
-							<WrappedNavigationMenuSelector
-								currentMenuId={ currentMenuId }
-								handleUpdateMenu={ handleUpdateMenu }
-								convertClassicMenu={ convertClassicMenu }
-								onCreateNew={ onCreateNew }
-								createNavigationMenuIsSuccess={
-									createNavigationMenuIsSuccess
-								}
-								createNavigationMenuIsError={
-									createNavigationMenuIsError
-								}
-							/>
-						</HStack>
-						{ currentMenuId && isNavigationMenuMissing ? (
-							<p>{ __( 'Select or create a menu' ) }</p>
-						) : (
-							<OffCanvasEditor
-								blocks={ innerBlocks }
-								isExpanded={ true }
-								selectBlockInCanvas={ false }
-							/>
-						) }
-					</>
-				) : (
-					<>
-						<WrappedNavigationMenuSelector
-							currentMenuId={ currentMenuId }
-							handleUpdateMenu={ handleUpdateMenu }
-							convertClassicMenu={ convertClassicMenu }
-							onCreateNew={ onCreateNew }
-							createNavigationMenuIsSuccess={
-								createNavigationMenuIsSuccess
-							}
-							createNavigationMenuIsError={
-								createNavigationMenuIsError
-							}
+				<>
+					{ isOffCanvasNavigationEditorEnabled && (
+						<VisuallyHidden as="h2">
+							{ __( 'Menu' ) }
+						</VisuallyHidden>
+					) }
+					<NavigationMenuSelector
+						currentMenuId={ currentMenuId }
+						onSelectClassicMenu={ onSelectClassicMenu }
+						onSelectNavigationMenu={ onSelectNavigationMenu }
+						onCreateNew={ onCreateNew }
+						createNavigationMenuIsSuccess={
+							createNavigationMenuIsSuccess
+						}
+						createNavigationMenuIsError={
+							createNavigationMenuIsError
+						}
+						actionLabel={ actionLabel }
+					/>
+					{ isOffCanvasNavigationEditorEnabled ? (
+						<OffCanvasEditor
+							blocks={ innerBlocks }
+							isExpanded={ true }
+							selectBlockInCanvas={ false }
 						/>
+					) : (
 						<ManageMenusButton
 							disabled={ isManageMenusButtonDisabled }
 						/>
-					</>
-				) }
+					) }
+				</>
 			</PanelBody>
 		</InspectorControls>
 	);
