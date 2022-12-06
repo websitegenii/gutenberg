@@ -90,13 +90,6 @@ if ( ! function_exists( '_wp_theme_has_theme_json_clean_cache_upon_upgrading_act
 }
 
 /**
- * Not to backport to core. Delete it instead.
- */
-function wp_theme_has_theme_json_clean_cache() {
-	_deprecated_function( __METHOD__, '14.7' );
-}
-
-/**
  * Returns the stylesheet resulting of merging core, theme, and user data.
  *
  * @param array $types Types of styles to load. Optional.
