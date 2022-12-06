@@ -110,9 +110,13 @@ class WP_Theme_JSON_Resolver_Gutenberg extends WP_Theme_JSON_Resolver_6_2 {
 
 		// When backporting to core, remove the instanceof Gutenberg class check, as it is only required for the Gutenberg plugin.
 		if ( null === static::$theme || ! static::$theme instanceof WP_Theme_JSON_Gutenberg ) {
-			$wp_theme        = wp_get_theme();
-			$theme_json_data = static::read_json_file( static::get_file_path_from_theme( 'theme.json' ) );
-			$theme_json_data = static::translate( $theme_json_data, $wp_theme->get( 'TextDomain' ) );
+			$wp_theme = wp_get_theme();
+			if ( wp_theme_has_theme_json( $wp_theme->get_stylesheet() ) ) {
+				$theme_json_data = static::read_json_file( static::get_file_path_from_theme( 'theme.json' ) );
+				$theme_json_data = static::translate( $theme_json_data, $wp_theme->get( 'TextDomain' ) );
+			} else {
+				$theme_json_data = array();
+			}
 			$theme_json_data = gutenberg_add_registered_webfonts_to_theme_json( $theme_json_data );
 
 			/**
@@ -126,8 +130,12 @@ class WP_Theme_JSON_Resolver_Gutenberg extends WP_Theme_JSON_Resolver_6_2 {
 
 			if ( $wp_theme->parent() ) {
 				// Get parent theme.json.
-				$parent_theme_json_data = static::read_json_file( static::get_file_path_from_theme( 'theme.json', true ) );
-				$parent_theme_json_data = static::translate( $parent_theme_json_data, $wp_theme->parent()->get( 'TextDomain' ) );
+				if ( wp_theme_has_theme_json( $wp_theme->parent()->get_stylesheet() ) ) {
+					$parent_theme_json_data = static::read_json_file( static::get_file_path_from_theme( 'theme.json', true ) );
+					$parent_theme_json_data = static::translate( $parent_theme_json_data, $wp_theme->parent()->get( 'TextDomain' ) );
+				} else {
+					$parent_theme_json_data = array();
+				}
 				$parent_theme_json_data = gutenberg_add_registered_webfonts_to_theme_json( $parent_theme_json_data );
 				$parent_theme           = new WP_Theme_JSON_Gutenberg( $parent_theme_json_data );
 
