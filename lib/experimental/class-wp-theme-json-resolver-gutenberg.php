@@ -141,7 +141,7 @@ class WP_Theme_JSON_Resolver_Gutenberg extends WP_Theme_JSON_Resolver_6_2 {
 					 */
 					$parent_theme->merge( static::$theme );
 					static::$theme = $parent_theme;
-				} 
+				}
 			}
 		}
 
