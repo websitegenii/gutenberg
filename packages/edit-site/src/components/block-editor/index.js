@@ -8,11 +8,7 @@ import classnames from 'classnames';
  */
 import { useSelect, useDispatch } from '@wordpress/data';
 import { useCallback, useMemo, useRef, Fragment } from '@wordpress/element';
-import {
-	useEntityBlockEditor,
-	__experimentalFetchMedia as fetchMedia,
-	store as coreStore,
-} from '@wordpress/core-data';
+import { useEntityBlockEditor, store as coreStore } from '@wordpress/core-data';
 import {
 	BlockList,
 	BlockEditorProvider,
@@ -39,6 +35,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import inserterMediaCategories from './inserter-media-categories';
 import TemplatePartConverter from '../template-part-converter';
 import NavigateToLink from '../navigate-to-link';
 import { SidebarInspectorFill } from '../sidebar-edit-mode';
@@ -127,7 +124,7 @@ export default function BlockEditor( { setIsInserterOpen } ) {
 
 		return {
 			...restStoredSettings,
-			__unstableFetchMedia: fetchMedia,
+			__unstableInserterMediaCategories: inserterMediaCategories,
 			__experimentalBlockPatterns: blockPatterns,
 			__experimentalBlockPatternCategories: blockPatternCategories,
 		};
