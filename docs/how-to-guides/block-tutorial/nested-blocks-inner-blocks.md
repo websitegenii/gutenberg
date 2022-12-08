@@ -11,7 +11,7 @@ Here is the basic usage.
 
 ```js
 import { registerBlockType } from '@wordpress/blocks';
-import { useBlockProps, useInnerBlocksProps  } from '@wordpress/block-editor';
+import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
 
 registerBlockType( 'gutenberg-examples/example-06', {
 	// ...
