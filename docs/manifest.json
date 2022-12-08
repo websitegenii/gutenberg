@@ -150,7 +150,7 @@
 		"parent": "block-tutorial"
 	},
 	{
-		"title": "Nested Blocks: Using InnerBlocks",
+		"title": "Nested Blocks: Using Inner Blocks",
 		"slug": "nested-blocks-inner-blocks",
 		"markdown_source": "../docs/how-to-guides/block-tutorial/nested-blocks-inner-blocks.md",
 		"parent": "block-tutorial"
