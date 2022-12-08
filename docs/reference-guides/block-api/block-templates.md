@@ -1,6 +1,6 @@
 # Block Templates
 
-A block template is defined as a list of block items. Such blocks can have predefined attributes, placeholder content, and be static or dynamic. Block templates allow specifying a default initial state for an editor session. 
+A block template is defined as a list of block items. Such blocks can have predefined attributes, placeholder content, and be static or dynamic. Block templates allow specifying a default initial state for an editor session.
 
 The scope of templates include:
 
@@ -32,12 +32,13 @@ function myplugin_register_template() {
 add_action( 'init', 'myplugin_register_template' );
 ```
 
-The following example in JavaScript creates a new block using [InnerBlocks](https://github.com/WordPress/gutenberg/blob/HEAD/packages/block-editor/src/components/inner-blocks/README.md) and templates, when inserted creates a set of blocks based off the template.
+The following example in JavaScript creates a new block using [Inner Blocks](/docs/how-to-guides/block-tutorial/nested-blocks-inner-blocks.md) and templates, when inserted creates a set of blocks based off the template.
 
 ```js
 const el = wp.element.createElement;
 const { registerBlockType } = wp.blocks;
-const { InnerBlocks } = wp.blockEditor;
+const useBlockProps = blockEditor.useBlockProps;
+const useInnerBlocksProps = blockEditor.useInnerBlocksProps;
 
 const BLOCKS_TEMPLATE = [
 	[ 'core/image', {} ],
@@ -48,13 +49,22 @@ registerBlockType( 'myplugin/template', {
 	title: 'My Template Block',
 	category: 'widgets',
 	edit: ( props ) => {
-		return el( InnerBlocks, {
-			template: BLOCKS_TEMPLATE,
-			templateLock: false,
-		} );
+		var blockProps = useBlockProps();
+		var innerBlocksProps = useInnerBlocksProps(
+			blockProps,
+			{
+				template: BLOCKS_TEMPLATE,
+				templateLock: false,
+			}
+		);
+
+		return el( 'div', innerBlocksProps );
 	},
 	save: ( props ) => {
-		return el( InnerBlocks.Content, {} );
+		var blockProps = useBlockProps.save();
+		var innerBlocksProps = useInnerBlocksProps.save( blockProps );
+
+		return el( 'div', innerBlocksProps );
 	},
 } );
 ```
@@ -119,7 +129,7 @@ _Options:_
 -   `all` — prevents all operations. It is not possible to insert new blocks, move existing blocks, or delete blocks.
 -   `insert` — prevents inserting or removing blocks, but allows moving existing blocks.
 
-Lock settings can be inherited by InnerBlocks. If `templateLock` is not set in an InnerBlocks area, the locking of the parent InnerBlocks area is used. If the block is a top level block, the locking configuration of the current post type is used.
+Lock settings can be inherited by inner blocks. If `templateLock` is not set in an inner blocks area, the locking of the parent inner blocks area is used. If the block is a top level block, the locking configuration of the current post type is used.
 
 ## Individual block locking
 

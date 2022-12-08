@@ -154,16 +154,6 @@ const MY_TEMPLATE = [
 
 		return el( 'div', innerBlocksProps );
 	},
-
-	edit: function( props ) {
-		return el(
-			InnerBlocks,
-			{
-				template: MY_TEMPLATE,
-				templateLock: "all",
-			}
-		);
-	},
 ```
 
 {% end %}

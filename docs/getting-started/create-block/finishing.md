@@ -16,7 +16,7 @@ The InspectorPanel (the settings on the right for a block) and Block Controls (t
 
 The [Sidebar tutorial](/docs/how-to-guides/sidebar-tutorial/plugin-sidebar-0.md) is a good resource on how to create a sidebar for your plugin.
 
-Nested blocks, a block that contains additional blocks, is a common pattern used by various blocks such as Columns, Cover, and Social Links. The **InnerBlocks component** enables this functionality, see the [Using InnerBlocks documentation](/docs/how-to-guides/block-tutorial/nested-blocks-inner-blocks.md).
+Nested blocks, a block that contains additional blocks, is a common pattern used by various blocks such as Columns, Cover, and Social Links. The **useInnerBlocksProps hook** enables this functionality, see the [Using Inner Blocks documentation](/docs/how-to-guides/block-tutorial/nested-blocks-inner-blocks.md).
 
 ## How did they do that
 

@@ -128,16 +128,21 @@ registerBlockType( 'my-plugin/record-title', {
 
 ```js
 import { TextControl } from '@wordpress/components';
-import { InnerBlocks } from '@wordpress/block-editor';
+import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
 
 export default function Edit( props ) {
 	const MY_TEMPLATE = [ [ 'my-plugin/record-title', {} ] ];
+	const blockProps = useBlockProps();
+	const { children, ...innerBlocksProps } = useInnerBlocksProps( blockProps, {
+		template: MY_TEMPLATE,
+		templateLock: 'all'
+	} );
 	const {
 		attributes: { recordId },
 		setAttributes,
 	} = props;
 	return (
-		<div>
+		<div {...innerBlocksProps}>
 			<TextControl
 				label={ __( 'Record ID:' ) }
 				value={ recordId }
@@ -145,7 +150,7 @@ export default function Edit( props ) {
 					setAttributes( { recordId: Number( val ) } )
 				}
 			/>
-			<InnerBlocks template={ MY_TEMPLATE } templateLock="all" />
+			{ children }
 		</div>
 	);
 }
