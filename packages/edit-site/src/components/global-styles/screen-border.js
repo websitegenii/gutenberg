@@ -9,13 +9,14 @@ import { __ } from '@wordpress/i18n';
 import ScreenHeader from './header';
 import BorderPanel, { useHasBorderPanel } from './border-panel';
 
-function ScreenBorder( { name } ) {
+function ScreenBorder( { name, variationPath = '' } ) {
 	const hasBorderPanel = useHasBorderPanel( name );
-
 	return (
 		<>
 			<ScreenHeader title={ __( 'Border' ) } />
-			{ hasBorderPanel && <BorderPanel name={ name } /> }
+			{ hasBorderPanel && (
+				<BorderPanel name={ name } variationPath={ variationPath } />
+			) }
 		</>
 	);
 }
