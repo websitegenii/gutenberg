@@ -8,7 +8,7 @@ import {
 	Button,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { layout, symbolFilled } from '@wordpress/icons';
+import { layout, symbolFilled, navigation } from '@wordpress/icons';
 import { useDispatch } from '@wordpress/data';
 import { useViewportMatch } from '@wordpress/compose';
 
@@ -49,6 +49,14 @@ export default function SidebarNavigationScreenMain() {
 			}
 			content={
 				<ItemGroup>
+					<NavigatorButton
+						as={ SidebarNavigationItem }
+						path="/navigation-menus"
+						withChevron
+						icon={ navigation }
+					>
+						{ __( 'Navigation menus' ) }
+					</NavigatorButton>
 					<NavigatorButton
 						as={ SidebarNavigationItem }
 						path="/templates"
