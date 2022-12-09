@@ -236,6 +236,86 @@ class WP_Theme_JSON_6_2 extends WP_Theme_JSON_6_1 {
 			'textTransform'  => null,
 		),
 		'css'        => null,
+		'variations' => array(
+			'fill'    => array(
+				'border'     => array(
+					'color'  => null,
+					'radius' => null,
+					'style'  => null,
+					'width'  => null,
+					'top'    => null,
+					'right'  => null,
+					'bottom' => null,
+					'left'   => null,
+				),
+				'color'      => array(
+					'background' => null,
+					'gradient'   => null,
+					'text'       => null,
+				),
+				'dimensions' => array(
+					'minHeight' => null,
+				),
+				'filter'     => array(
+					'duotone' => null,
+				),
+				'shadow'     => null,
+				'spacing'    => array(
+					'margin'   => null,
+					'padding'  => null,
+					'blockGap' => null,
+				),
+				'typography' => array(
+					'fontFamily'     => null,
+					'fontSize'       => null,
+					'fontStyle'      => null,
+					'fontWeight'     => null,
+					'letterSpacing'  => null,
+					'lineHeight'     => null,
+					'textDecoration' => null,
+					'textTransform'  => null,
+				),
+			),
+			'outline' => array(
+				'border'     => array(
+					'color'  => null,
+					'radius' => null,
+					'style'  => null,
+					'width'  => null,
+					'top'    => null,
+					'right'  => null,
+					'bottom' => null,
+					'left'   => null,
+				),
+				'color'      => array(
+					'background' => null,
+					'gradient'   => null,
+					'text'       => null,
+				),
+				'dimensions' => array(
+					'minHeight' => null,
+				),
+				'filter'     => array(
+					'duotone' => null,
+				),
+				'shadow'     => null,
+				'spacing'    => array(
+					'margin'   => null,
+					'padding'  => null,
+					'blockGap' => null,
+				),
+				'typography' => array(
+					'fontFamily'     => null,
+					'fontSize'       => null,
+					'fontStyle'      => null,
+					'fontWeight'     => null,
+					'letterSpacing'  => null,
+					'lineHeight'     => null,
+					'textDecoration' => null,
+					'textTransform'  => null,
+				),
+			),
+		),
 	);
 
 	/**
