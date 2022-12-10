@@ -517,6 +517,7 @@ function GalleryEdit( props ) {
 						help={ getImageCropHelp }
 					/>
 					<SelectControl
+						__nextHasNoMarginBottom
 						label={ __( 'Link to' ) }
 						value={ linkTo }
 						onChange={ setLinkTo }
@@ -532,6 +533,7 @@ function GalleryEdit( props ) {
 					) }
 					{ imageSizeOptions?.length > 0 && (
 						<SelectControl
+							__nextHasNoMarginBottom
 							label={ __( 'Image size' ) }
 							value={ sizeSlug }
 							options={ imageSizeOptions }
