@@ -62,6 +62,12 @@ export const PRESET_METADATA = [
 		classes: [],
 	},
 	{
+		path: [ 'shadow', 'palette' ],
+		valueKey: 'shadow',
+		cssVarInfix: 'shadow',
+		classes: [],
+	},
+	{
 		path: [ 'typography', 'fontSizes' ],
 		valueFunc: ( preset, { typography: typographySettings } ) =>
 			getTypographyFontSizeValue( preset, typographySettings ),
@@ -96,6 +102,7 @@ const STYLE_PATH_TO_CSS_VAR_INFIX = {
 	'elements.heading.backgroundColor': 'background-color',
 	'elements.heading.gradient': 'gradient',
 	'color.gradient': 'gradient',
+	shadow: 'shadow',
 	'typography.fontSize': 'font-size',
 	'typography.fontFamily': 'font-family',
 };
