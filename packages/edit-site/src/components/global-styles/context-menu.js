@@ -45,9 +45,9 @@ function ContextMenu( { name, parentMenu = '' } ) {
 				<NavigationButtonAsItem
 					icon={ border }
 					path={ parentMenu + '/border' }
-					aria-label={ __( 'Border styles' ) }
+					aria-label={ __( 'Border and shadow styles' ) }
 				>
-					{ __( 'Border' ) }
+					{ __( 'Border & Shadow' ) }
 				</NavigationButtonAsItem>
 			) }
 			{ hasLayoutPanel && (

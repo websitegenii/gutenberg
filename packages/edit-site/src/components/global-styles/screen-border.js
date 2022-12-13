@@ -16,7 +16,7 @@ function ScreenBorder( { name } ) {
 
 	return (
 		<>
-			<ScreenHeader title={ __( 'Border' ) } />
+			<ScreenHeader title={ __( 'Border & Shadow' ) } />
 			{ hasBorderPanel && <BorderPanel name={ name } /> }
 			{ hasShadowPanel && <ShadowPanel name={ name } /> }
 		</>
