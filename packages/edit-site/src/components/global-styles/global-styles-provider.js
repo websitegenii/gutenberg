@@ -152,6 +152,7 @@ function useGlobalStylesContext() {
 		isUserConfigReady,
 		isBaseConfigReady,
 	] );
+
 	return context;
 }
 
