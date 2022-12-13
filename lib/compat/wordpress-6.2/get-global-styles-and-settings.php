@@ -66,29 +66,6 @@ if ( ! function_exists( 'wp_theme_has_theme_json_clean_cache' ) ) {
 	}
 }
 
-if ( ! function_exists( '_wp_theme_has_theme_json_clean_cache_upon_upgrading_active_theme' ) ) {
-	/**
-	 * Private function to clean the cache used by wp_theme_has_theme_json method.
-	 *
-	 * It is hooked into the `upgrader_process_complete` action.
-	 *
-	 * @param WP_Upgrader $upgrader Instance of WP_Upgrader class.
-	 * @param array $options Metadata that identifies the data that is updated.
-	 *
-	 * @see default-filters.php
-	 *
-	 */
-	function _wp_theme_has_theme_json_clean_cache_upon_upgrading_active_theme( $upgrader, $options ) {
-		// The cache only needs cleaning when the active theme was updated.
-		if ( 'update' === $options['action'] && 'theme' === $options['type'] && ! empty( $options['themes'] ) ) {
-			foreach ( $options['themes'] as $theme ) {
-				wp_theme_has_theme_json_clean_cache( $theme );
-			}
-		}
-
-	}
-}
-
 /**
  * Returns the stylesheet resulting of merging core, theme, and user data.
  *
@@ -219,7 +196,12 @@ function gutenberg_get_global_settings( $path = array(), $context = array() ) {
  * @access private
  */
 function _gutenberg_clean_theme_json_caches() {
-	wp_cache_delete( 'wp_theme_has_theme_json', 'theme_json' );
+	$stylesheet = get_stylesheet();
+	$template   = get_template();
+	wp_theme_has_theme_json_clean_cache( $stylesheet );
+	if( $stylesheet !== $template ){
+		wp_theme_has_theme_json_clean_cache( $template );
+	}
 	wp_cache_delete( 'gutenberg_get_global_stylesheet', 'theme_json' );
 	wp_cache_delete( 'gutenberg_get_global_settings_custom', 'theme_json' );
 	wp_cache_delete( 'gutenberg_get_global_settings_theme', 'theme_json' );
