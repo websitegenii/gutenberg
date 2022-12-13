@@ -201,8 +201,6 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON {
 	 */
 	protected static function sanitize( $input, $valid_block_names, $valid_element_names ) {
 
-		$valid_variation_names = array( 'fill', 'outline' );
-
 		$output = array();
 
 		if ( ! is_array( $input ) ) {
@@ -245,18 +243,12 @@ class WP_Theme_JSON_6_1 extends WP_Theme_JSON {
 			}
 		}
 
-		$schema_styles_variations = array();
-		foreach ( $valid_variation_names as $variation ) {
-			$schema_styles_variations[ $variation ] = $styles_non_top_level;
-		}
-
 		$schema_styles_blocks   = array();
 		$schema_settings_blocks = array();
 		foreach ( $valid_block_names as $block ) {
-			$schema_settings_blocks[ $block ]             = static::VALID_SETTINGS;
-			$schema_styles_blocks[ $block ]               = $styles_non_top_level;
-			$schema_styles_blocks[ $block ]['elements']   = $schema_styles_elements;
-			$schema_styles_blocks[ $block ]['variations'] = $schema_styles_variations;
+			$schema_settings_blocks[ $block ]           = static::VALID_SETTINGS;
+			$schema_styles_blocks[ $block ]             = $styles_non_top_level;
+			$schema_styles_blocks[ $block ]['elements'] = $schema_styles_elements;
 		}
 
 		$schema['styles']             = static::VALID_STYLES;
