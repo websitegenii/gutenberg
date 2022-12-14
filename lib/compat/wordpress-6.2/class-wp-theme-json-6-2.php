@@ -383,7 +383,18 @@ class WP_Theme_JSON_6_2 extends WP_Theme_JSON_6_1 {
 
 		// Load the custom CSS last so it has the highest specificity.
 		if ( in_array( 'custom-css', $types, true ) ) {
+			// Add the global styles root CSS:
 			$stylesheet .= _wp_array_get( $this->theme_json, array( 'styles', 'css' ) );
+
+			// Add the global styles block CSS.
+			// WIP: Just testing stuff. I am assuming this is in the wrong place.
+			// The CSS also should be added to the block meta data and style nodes.
+			foreach ( $this->theme_json['styles']['blocks'] as $name => $node )
+				if ( _wp_array_get( $this->theme_json, array( 'styles', 'blocks', $name, 'css' ) ) ) {
+				$selector = static::$blocks_metadata[ $name ]['selector'];
+				$custom_block_css = _wp_array_get( $this->theme_json, array( 'styles', 'blocks', $name, 'css' ) );
+				$stylesheet .= $selector . '{' . $custom_block_css . '}';
+			}
 		}
 
 		return $stylesheet;
