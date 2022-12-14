@@ -174,4 +174,35 @@ class WP_Theme_JSON_Resolver_Gutenberg extends WP_Theme_JSON_Resolver_6_2 {
 		return $array;
 	}
 
+	/**
+	 * Returns the style variations defined by the theme (parent and child).
+	 *
+	 * @return array
+	 */
+	public static function get_style_variations() {
+		$variations     = array();
+		$base_directory = get_stylesheet_directory() . '/styles';
+		$parent_theme_directory = get_template_directory() . '/styles';
+		if ( is_dir( $base_directory ) ) {
+			$nested_files      = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $base_directory ) );
+			$nested_json_files = iterator_to_array( new RegexIterator( $nested_files, '/^.+\.json$/i', RecursiveRegexIterator::GET_MATCH ) );
+			if ( $parent_theme_directory !== $base_directory && is_dir( $parent_theme_directory ) ) {
+				$nested_files      = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $parent_theme_directory ) );
+				$nested_json_files = array_merge( iterator_to_array( new RegexIterator( $nested_files, '/^.+\.json$/i', RecursiveRegexIterator::GET_MATCH ) ), $nested_html_files );
+			}
+			ksort( $nested_html_files );
+			foreach ( $nested_html_files as $path => $file ) {
+				$decoded_file = wp_json_file_decode( $path, array( 'associative' => true ) );
+				if ( is_array( $decoded_file ) ) {
+					$translated = static::translate( $decoded_file, wp_get_theme()->get( 'TextDomain' ) );
+					$variation  = ( new WP_Theme_JSON( $translated ) )->get_raw_data();
+					if ( empty( $variation['title'] ) ) {
+						$variation['title'] = basename( $path, '.json' );
+					}
+					$variations[] = $variation;
+				}
+			}
+		}
+		return $variations;
+	}
 }
