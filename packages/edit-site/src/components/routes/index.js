@@ -39,7 +39,14 @@ export function Routes( { children } ) {
 
 	useEffect( () => {
 		return history.listen( ( { location: updatedLocation } ) => {
-			setLocation( getLocationWithParams( updatedLocation ) );
+			setLocation( ( currentLocation ) => {
+				// Skip location update if query args are identical.
+				if ( currentLocation.search === updatedLocation.search ) {
+					return currentLocation;
+				}
+
+				return getLocationWithParams( updatedLocation );
+			} );
 		} );
 	}, [] );
 
