@@ -8,6 +8,7 @@ import {
 	hydrate,
 	unmountComponentAtNode,
 } from 'react-dom';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 
 /**
  * Creates a portal into which a component can be rendered.
@@ -27,6 +28,9 @@ export { createPortal };
  */
 export { findDOMNode };
 
+export { createRoot };
+
+export { hydrateRoot };
 /**
  * Renders a given element into the target DOM node.
  *

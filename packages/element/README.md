@@ -198,6 +198,10 @@ _Returns_
 
 -   `Object`: Ref object.
 
+### createRoot
+
+Undocumented declaration.
+
 ### findDOMNode
 
 Finds the dom node of a React component.
@@ -233,6 +237,10 @@ _Parameters_
 
 -   _element_ `import('./react').WPElement`: Element to hydrate.
 -   _target_ `HTMLElement`: DOM node into which element should be hydrated.
+
+### hydrateRoot
+
+Undocumented declaration.
 
 ### isEmptyElement
 
