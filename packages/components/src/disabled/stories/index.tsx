@@ -49,6 +49,7 @@ const Form = () => {
 				onChange={ setTextAreaValue }
 			/>
 			<SelectControl
+				__nextHasNoMarginBottom
 				label="Select Control"
 				onChange={ () => {} }
 				options={ [
