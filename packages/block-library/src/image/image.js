@@ -168,7 +168,10 @@ export default function Image( {
 	const [ isEditingImage, setIsEditingImage ] = useState( false );
 	const [ externalBlob, setExternalBlob ] = useState();
 	const clientWidth = useClientWidth( containerRef, [ align ] );
-	const isResizable = isLargeViewport && allowResize && ! isContentLocked;
+	const isResizable =
+		allowResize &&
+		! isContentLocked &&
+		! ( isWideAligned && isLargeViewport );
 	const imageSizeOptions = map(
 		imageSizes.filter( ( { slug } ) =>
 			get( image, [ 'media_details', 'sizes', slug, 'source_url' ] )
@@ -508,9 +511,15 @@ export default function Image( {
 	);
 
 	let imageWidthWithinContainer;
+	let imageHeightWithinContainer;
+
 	if ( clientWidth && naturalWidth && naturalHeight ) {
 		const exceedMaxWidth = naturalWidth > clientWidth;
+		const ratio = naturalHeight / naturalWidth;
 		imageWidthWithinContainer = exceedMaxWidth ? clientWidth : naturalWidth;
+		imageHeightWithinContainer = exceedMaxWidth
+			? clientWidth * ratio
+			: naturalHeight;
 	}
 
 	if ( canEditImage && isEditingImage ) {
@@ -528,6 +537,9 @@ export default function Image( {
 	} else if ( ! isResizable || ! imageWidthWithinContainer ) {
 		img = <div style={ { width, height } }>{ img }</div>;
 	} else {
+		const currentWidth = width || imageWidthWithinContainer;
+		const currentHeight = height || imageHeightWithinContainer;
+
 		const ratio = naturalWidth / naturalHeight;
 		const minWidth =
 			naturalWidth < naturalHeight ? MIN_SIZE : MIN_SIZE * ratio;
@@ -566,10 +578,6 @@ export default function Image( {
 			/>
 		);
 
-		const resizableContainerWidth = isWideAligned
-			? '100%'
-			: width ?? 'auto';
-
 		img = (
 			<ResizableAlignmentControls
 				allowedAlignments={ [ 'none', 'wide', 'full' ] }
@@ -580,12 +588,11 @@ export default function Image( {
 				minHeight={ minHeight }
 				maxHeight={ maxWidthBuffer / ratio }
 				onResizeStart={ onResizeStart }
-				onResizeStop={ ( newWidth, newHeight ) => {
+				onResizeStop={ ( event, direction, elt, delta ) => {
 					onResizeStop();
 					setAttributes( {
-						align: 'none',
-						width: parseInt( newWidth, 10 ),
-						height: parseInt( newHeight, 10 ),
+						width: parseInt( currentWidth + delta.width, 10 ),
+						height: parseInt( currentHeight + delta.height, 10 ),
 					} );
 				} }
 				onSnap={ ( newAlignment ) => {
@@ -596,7 +603,7 @@ export default function Image( {
 				} }
 				showHandle={ isSelected }
 				size={ {
-					width: resizableContainerWidth,
+					width: width ?? 'auto',
 					height: height && ! hasCustomBorder ? height : 'auto',
 				} }
 			>
