@@ -236,86 +236,6 @@ class WP_Theme_JSON_6_2 extends WP_Theme_JSON_6_1 {
 			'textTransform'  => null,
 		),
 		'css'        => null,
-		'variations' => array(
-			'fill'    => array(
-				'border'     => array(
-					'color'  => null,
-					'radius' => null,
-					'style'  => null,
-					'width'  => null,
-					'top'    => null,
-					'right'  => null,
-					'bottom' => null,
-					'left'   => null,
-				),
-				'color'      => array(
-					'background' => null,
-					'gradient'   => null,
-					'text'       => null,
-				),
-				'dimensions' => array(
-					'minHeight' => null,
-				),
-				'filter'     => array(
-					'duotone' => null,
-				),
-				'shadow'     => null,
-				'spacing'    => array(
-					'margin'   => null,
-					'padding'  => null,
-					'blockGap' => null,
-				),
-				'typography' => array(
-					'fontFamily'     => null,
-					'fontSize'       => null,
-					'fontStyle'      => null,
-					'fontWeight'     => null,
-					'letterSpacing'  => null,
-					'lineHeight'     => null,
-					'textDecoration' => null,
-					'textTransform'  => null,
-				),
-			),
-			'outline' => array(
-				'border'     => array(
-					'color'  => null,
-					'radius' => null,
-					'style'  => null,
-					'width'  => null,
-					'top'    => null,
-					'right'  => null,
-					'bottom' => null,
-					'left'   => null,
-				),
-				'color'      => array(
-					'background' => null,
-					'gradient'   => null,
-					'text'       => null,
-				),
-				'dimensions' => array(
-					'minHeight' => null,
-				),
-				'filter'     => array(
-					'duotone' => null,
-				),
-				'shadow'     => null,
-				'spacing'    => array(
-					'margin'   => null,
-					'padding'  => null,
-					'blockGap' => null,
-				),
-				'typography' => array(
-					'fontFamily'     => null,
-					'fontSize'       => null,
-					'fontStyle'      => null,
-					'fontWeight'     => null,
-					'letterSpacing'  => null,
-					'lineHeight'     => null,
-					'textDecoration' => null,
-					'textTransform'  => null,
-				),
-			),
-		),
 	);
 
 	/**
@@ -330,8 +250,6 @@ class WP_Theme_JSON_6_2 extends WP_Theme_JSON_6_1 {
 	 * @return array The sanitized output.
 	 */
 	protected static function sanitize( $input, $valid_block_names, $valid_element_names ) {
-
-		$valid_variation_names = array( 'fill', 'outline' );
 
 		$output = array();
 
@@ -375,14 +293,16 @@ class WP_Theme_JSON_6_2 extends WP_Theme_JSON_6_1 {
 			}
 		}
 
-		$schema_styles_variations = array();
-		foreach ( $valid_variation_names as $variation ) {
-			$schema_styles_variations[ $variation ] = $styles_non_top_level;
-		}
-
 		$schema_styles_blocks   = array();
 		$schema_settings_blocks = array();
 		foreach ( $valid_block_names as $block ) {
+			// Blocks can have multiple style variations, so we need to build the schema for each one.
+			$style_variation_names    = isset( $input['styles']['blocks'][ $block ]['variations'] ) ? array_keys( $input['styles']['blocks'][ $block ]['variations'] ) : array();
+			$schema_styles_variations = array();
+			if ( ! empty( $style_variation_names ) ) {
+				$schema_styles_variations = array_fill_keys( $style_variation_names, $styles_non_top_level );
+			}
+
 			$schema_settings_blocks[ $block ]             = static::VALID_SETTINGS;
 			$schema_styles_blocks[ $block ]               = $styles_non_top_level;
 			$schema_styles_blocks[ $block ]['elements']   = $schema_styles_elements;
