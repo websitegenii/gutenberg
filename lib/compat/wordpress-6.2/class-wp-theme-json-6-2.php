@@ -381,6 +381,268 @@ class WP_Theme_JSON_6_2 extends WP_Theme_JSON_6_1 {
 	}
 
 	/**
+	 * Returns the metadata for each block.
+	 *
+	 * Example:
+	 *
+	 *     {
+	 *       'core/paragraph': {
+	 *         'selector': 'p',
+	 *         'elements': {
+	 *           'link' => 'link selector',
+	 *           'etc'  => 'element selector'
+	 *         }
+	 *       },
+	 *       'core/heading': {
+	 *         'selector': 'h1',
+	 *         'elements': {}
+	 *       },
+	 *       'core/image': {
+	 *         'selector': '.wp-block-image',
+	 *         'duotone': 'img',
+	 *         'elements': {}
+	 *       }
+	 *     }
+	 *
+	 * @return array Block metadata.
+	 */
+	protected static function get_blocks_metadata() {
+		if ( null !== static::$blocks_metadata ) {
+			return static::$blocks_metadata;
+		}
+
+		static::$blocks_metadata = array();
+
+		$registry = WP_Block_Type_Registry::get_instance();
+		$blocks   = $registry->get_all_registered();
+		foreach ( $blocks as $block_name => $block_type ) {
+			if (
+				isset( $block_type->supports['__experimentalSelector'] ) &&
+				is_string( $block_type->supports['__experimentalSelector'] )
+			) {
+				static::$blocks_metadata[ $block_name ]['selector'] = $block_type->supports['__experimentalSelector'];
+			} else {
+				static::$blocks_metadata[ $block_name ]['selector'] = '.wp-block-' . str_replace( '/', '-', str_replace( 'core/', '', $block_name ) );
+			}
+
+			if (
+				isset( $block_type->supports['color']['__experimentalDuotone'] ) &&
+				is_string( $block_type->supports['color']['__experimentalDuotone'] )
+			) {
+				static::$blocks_metadata[ $block_name ]['duotone'] = $block_type->supports['color']['__experimentalDuotone'];
+			}
+
+			// Generate block support feature level selectors if opted into
+			// for the current block.
+			$features = array();
+			foreach ( static::BLOCK_SUPPORT_FEATURE_LEVEL_SELECTORS as $key => $feature ) {
+				if (
+					isset( $block_type->supports[ $key ]['__experimentalSelector'] ) &&
+					$block_type->supports[ $key ]['__experimentalSelector']
+				) {
+					$features[ $feature ] = static::scope_selector(
+						static::$blocks_metadata[ $block_name ]['selector'],
+						$block_type->supports[ $key ]['__experimentalSelector']
+					);
+				}
+			}
+
+			if ( ! empty( $features ) ) {
+				static::$blocks_metadata[ $block_name ]['features'] = $features;
+			}
+
+			// Assign defaults, then override those that the block sets by itself.
+			// If the block selector is compounded, will append the element to each
+			// individual block selector.
+			$block_selectors = explode( ',', static::$blocks_metadata[ $block_name ]['selector'] );
+			foreach ( static::ELEMENTS as $el_name => $el_selector ) {
+				$element_selector = array();
+				foreach ( $block_selectors as $selector ) {
+					if ( $selector === $el_selector ) {
+						$element_selector = array( $el_selector );
+						break;
+					}
+					$element_selector[] = static::append_to_selector( $el_selector, $selector . ' ', 'left' );
+				}
+				static::$blocks_metadata[ $block_name ]['elements'][ $el_name ] = implode( ',', $element_selector );
+			}
+
+			// If the block has style variations, append their selectors to the block metadata.
+			if ( ! empty( $block_type->styles ) ) {
+				$style_selectors = array();
+				foreach ( $block_type->styles as $style ) {
+					$style_selectors[ $style['name'] ] = static::append_to_selector( '.is-style-' . $style['name'], static::$blocks_metadata[ $block_name ]['selector'] );
+				}
+				static::$blocks_metadata[ $block_name ]['styleVariations'] = $style_selectors;
+			}
+		}
+		return static::$blocks_metadata;
+	}
+
+
+	/**
+	 * Builds metadata for the style nodes, which returns in the form of:
+	 *
+	 *     [
+	 *       [
+	 *         'path'     => [ 'path', 'to', 'some', 'node' ],
+	 *         'selector' => 'CSS selector for some node',
+	 *         'duotone'  => 'CSS selector for duotone for some node'
+	 *       ],
+	 *       [
+	 *         'path'     => ['path', 'to', 'other', 'node' ],
+	 *         'selector' => 'CSS selector for other node',
+	 *         'duotone'  => null
+	 *       ],
+	 *     ]
+	 *
+	 * @since 5.8.0
+	 *
+	 * @param array $theme_json The tree to extract style nodes from.
+	 * @param array $selectors  List of selectors per block.
+	 * @return array
+	 */
+	protected static function get_style_nodes( $theme_json, $selectors = array() ) {
+		$nodes = array();
+		if ( ! isset( $theme_json['styles'] ) ) {
+			return $nodes;
+		}
+
+		// Top-level.
+		$nodes[] = array(
+			'path'     => array( 'styles' ),
+			'selector' => static::ROOT_BLOCK_SELECTOR,
+		);
+
+		if ( isset( $theme_json['styles']['elements'] ) ) {
+			foreach ( self::ELEMENTS as $element => $selector ) {
+				if ( ! isset( $theme_json['styles']['elements'][ $element ] ) || ! array_key_exists( $element, static::ELEMENTS ) ) {
+					continue;
+				}
+
+				// Handle element defaults.
+				$nodes[] = array(
+					'path'     => array( 'styles', 'elements', $element ),
+					'selector' => static::ELEMENTS[ $element ],
+				);
+
+				// Handle any pseudo selectors for the element.
+				if ( array_key_exists( $element, static::VALID_ELEMENT_PSEUDO_SELECTORS ) ) {
+					foreach ( static::VALID_ELEMENT_PSEUDO_SELECTORS[ $element ] as $pseudo_selector ) {
+
+						if ( isset( $theme_json['styles']['elements'][ $element ][ $pseudo_selector ] ) ) {
+
+							$nodes[] = array(
+								'path'     => array( 'styles', 'elements', $element ),
+								'selector' => static::append_to_selector( static::ELEMENTS[ $element ], $pseudo_selector ),
+							);
+						}
+					}
+				}
+			}
+		}
+
+		// Blocks.
+		if ( ! isset( $theme_json['styles']['blocks'] ) ) {
+			return $nodes;
+		}
+
+		$nodes = array_merge( $nodes, static::get_block_nodes( $theme_json, $selectors ) );
+
+		// This filter allows us to modify the output of WP_Theme_JSON so that we can do things like loading block CSS independently.
+		return apply_filters( 'wp_theme_json_get_style_nodes', $nodes );
+	}
+
+	/**
+	 * A public helper to get the block nodes from a theme.json file.
+	 *
+	 * @return array The block nodes in theme.json.
+	 */
+	public function get_styles_block_nodes() {
+		return static::get_block_nodes( $this->theme_json );
+	}
+
+	/**
+	 * An internal method to get the block nodes from a theme.json file.
+	 *
+	 * @param array $theme_json The theme.json converted to an array.
+	 * @param array $selectors  Optional list of selectors per block.
+	 *
+	 * @return array The block nodes in theme.json.
+	 */
+	private static function get_block_nodes( $theme_json, $selectors = array() ) {
+		$selectors = empty( $selectors ) ? static::get_blocks_metadata() : $selectors;
+		$nodes     = array();
+		if ( ! isset( $theme_json['styles'] ) ) {
+			return $nodes;
+		}
+
+		// Blocks.
+		if ( ! isset( $theme_json['styles']['blocks'] ) ) {
+			return $nodes;
+		}
+
+		foreach ( $theme_json['styles']['blocks'] as $name => $node ) {
+
+			$selector = null;
+			if ( isset( $selectors[ $name ]['selector'] ) ) {
+				$selector = $selectors[ $name ]['selector'];
+			}
+
+			$duotone_selector = null;
+			if ( isset( $selectors[ $name ]['duotone'] ) ) {
+				$duotone_selector = $selectors[ $name ]['duotone'];
+			}
+
+			$feature_selectors = null;
+			if ( isset( $selectors[ $name ]['features'] ) ) {
+				$feature_selectors = $selectors[ $name ]['features'];
+			}
+
+			$nodes[] = array(
+				'name'     => $name,
+				'path'     => array( 'styles', 'blocks', $name ),
+				'selector' => $selector,
+				'duotone'  => $duotone_selector,
+				'features' => $feature_selectors,
+			);
+
+			if ( isset( $theme_json['styles']['blocks'][ $name ]['elements'] ) ) {
+				foreach ( $theme_json['styles']['blocks'][ $name ]['elements'] as $element => $node ) {
+					$nodes[] = array(
+						'path'     => array( 'styles', 'blocks', $name, 'elements', $element ),
+						'selector' => $selectors[ $name ]['elements'][ $element ],
+					);
+
+					// Handle any pseudo selectors for the element.
+					if ( array_key_exists( $element, static::VALID_ELEMENT_PSEUDO_SELECTORS ) ) {
+						foreach ( static::VALID_ELEMENT_PSEUDO_SELECTORS[ $element ] as $pseudo_selector ) {
+							if ( isset( $theme_json['styles']['blocks'][ $name ]['elements'][ $element ][ $pseudo_selector ] ) ) {
+
+								$nodes[] = array(
+									'path'     => array( 'styles', 'blocks', $name, 'elements', $element ),
+									'selector' => static::append_to_selector( $selectors[ $name ]['elements'][ $element ], $pseudo_selector ),
+								);
+							}
+						}
+					}
+				}
+			}
+
+			if ( isset( $node['variations'] ) ) {
+				foreach ( $node['variations'] as $variation => $node ) {
+					$nodes[] = array(
+						'path'     => array( 'styles', 'blocks', $name, 'variations', $variation ),
+						'selector' => $selectors[ $name ]['styleVariations'][ $variation ],
+					);
+				}
+			}
+		}
+
+		return $nodes;
+	}
+
+	/**
 	 * Returns the stylesheet that results of processing
 	 * the theme.json structure this object represents.
 	 *
