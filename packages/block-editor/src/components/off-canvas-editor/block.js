@@ -41,6 +41,8 @@ import { store as blockEditorStore } from '../../store';
 import useBlockDisplayInformation from '../use-block-display-information';
 import { useBlockLock } from '../block-lock';
 
+const noop = () => {};
+
 function ListViewBlock( {
 	block: { clientId },
 	isDragged,
@@ -57,6 +59,7 @@ function ListViewBlock( {
 	selectedClientIds,
 	preventAnnouncement,
 	selectBlockInCanvas,
+	onInsertBlock = noop,
 } ) {
 	const cellRef = useRef( null );
 	const [ isHovered, setIsHovered ] = useState( false );
@@ -379,6 +382,9 @@ function ListViewBlock( {
 													clientId,
 													updateSelectionOnInsert
 												);
+												onInsertBlock(
+													newLink?.clientId
+												);
 											} else {
 												// Convert to a submenu if the block currently isn't one.
 												const newSubmenu = createBlock(
@@ -394,6 +400,9 @@ function ListViewBlock( {
 												replaceBlock(
 													clientId,
 													newSubmenu
+												);
+												onInsertBlock(
+													newSubmenu?.clientId
 												);
 											}
 											onClose();
