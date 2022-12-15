@@ -599,12 +599,23 @@ class WP_Theme_JSON_6_2 extends WP_Theme_JSON_6_1 {
 				$feature_selectors = $selectors[ $name ]['features'];
 			}
 
+			$variation_selectors = array();
+			if ( isset( $node['variations'] ) ) {
+				foreach ( $node['variations'] as $variation => $node ) {
+					$variation_selectors[] = array(
+						'path'     => array( 'styles', 'blocks', $name, 'variations', $variation ),
+						'selector' => $selectors[ $name ]['styleVariations'][ $variation ],
+					);
+				}
+			}
+
 			$nodes[] = array(
-				'name'     => $name,
-				'path'     => array( 'styles', 'blocks', $name ),
-				'selector' => $selector,
-				'duotone'  => $duotone_selector,
-				'features' => $feature_selectors,
+				'name'       => $name,
+				'path'       => array( 'styles', 'blocks', $name ),
+				'selector'   => $selector,
+				'duotone'    => $duotone_selector,
+				'features'   => $feature_selectors,
+				'variations' => $variation_selectors,
 			);
 
 			if ( isset( $theme_json['styles']['blocks'][ $name ]['elements'] ) ) {
@@ -626,15 +637,6 @@ class WP_Theme_JSON_6_2 extends WP_Theme_JSON_6_1 {
 							}
 						}
 					}
-				}
-			}
-
-			if ( isset( $node['variations'] ) ) {
-				foreach ( $node['variations'] as $variation => $node ) {
-					$nodes[] = array(
-						'path'     => array( 'styles', 'blocks', $name, 'variations', $variation ),
-						'selector' => $selectors[ $name ]['styleVariations'][ $variation ],
-					);
 				}
 			}
 		}
@@ -749,5 +751,197 @@ class WP_Theme_JSON_6_2 extends WP_Theme_JSON_6_1 {
 		}
 
 		return $stylesheet;
+	}
+
+		/**
+		 * Gets the CSS rules for a particular block from theme.json.
+		 *
+		 * @param array $block_metadata Metadata about the block to get styles for.
+		 *
+		 * @return string Styles for the block.
+		 */
+	public function get_styles_for_block( $block_metadata ) {
+		$node             = _wp_array_get( $this->theme_json, $block_metadata['path'], array() );
+		$use_root_padding = isset( $this->theme_json['settings']['useRootPaddingAwareAlignments'] ) && true === $this->theme_json['settings']['useRootPaddingAwareAlignments'];
+		$selector         = $block_metadata['selector'];
+		$settings         = _wp_array_get( $this->theme_json, array( 'settings' ) );
+
+		// Process style declarations for block support features the current
+		// block contains selectors for. Values for a feature with a custom
+		// selector are filtered from the theme.json node before it is
+		// processed as normal.
+		$feature_declarations = array();
+
+		if ( ! empty( $block_metadata['features'] ) ) {
+			foreach ( $block_metadata['features'] as $feature_name => $feature_selector ) {
+				if ( ! empty( $node[ $feature_name ] ) ) {
+					// Create temporary node containing only the feature data
+					// to leverage existing `compute_style_properties` function.
+					$feature = array( $feature_name => $node[ $feature_name ] );
+					// Generate the feature's declarations only.
+					$new_feature_declarations = static::compute_style_properties( $feature, $settings, null, $this->theme_json );
+
+					// Merge new declarations with any that already exist for
+					// the feature selector. This may occur when multiple block
+					// support features use the same custom selector.
+					if ( isset( $feature_declarations[ $feature_selector ] ) ) {
+						$feature_declarations[ $feature_selector ] = array_merge( $feature_declarations[ $feature_selector ], $new_feature_declarations );
+					} else {
+						$feature_declarations[ $feature_selector ] = $new_feature_declarations;
+					}
+
+					// Remove the feature from the block's node now the
+					// styles will be included under the feature level selector.
+					unset( $node[ $feature_name ] );
+				}
+			}
+		}
+
+		// If there are style variations, generate the selectors for them, including any feature selectors.
+		$style_variation_declarations = array();
+		if ( ! empty( $block_metadata['variations'] ) ) {
+			foreach ( $block_metadata['variations'] as $style_variation ) {
+				$style_variation_node     = _wp_array_get( $this->theme_json, $style_variation['path'], array() );
+				$style_variation_selector = $style_variation['selector'];
+
+				if ( ! empty( $block_metadata['features'] ) ) {
+					foreach ( $block_metadata['features'] as $feature_name => $feature_selector ) {
+						if ( ! empty( $style_variation_node[ $feature_name ] ) ) {
+							// Prepend the variation selector to the feature selector.
+							$split_feature_selectors    = explode( ',', $feature_selector );
+							$feature_selectors          = array_map(
+								function( $split_feature_selector ) use ( $style_variation_selector ) {
+									return trim( $style_variation_selector ) . trim( $split_feature_selector );
+								},
+								$split_feature_selectors
+							);
+							$combined_feature_selectors = implode( ',', $feature_selectors );
+
+							// Compute declarations for the feature.
+							$new_feature_declarations = static::compute_style_properties( array( $feature_name => $style_variation_node[ $feature_name ] ), $settings, null, $this->theme_json );
+
+							// Merge new declarations with any that already exist for
+							// the feature selector. This may occur when multiple block
+							// support features use the same custom selector.
+							if ( isset( $style_variation_declarations[ $combined_feature_selectors ] ) ) {
+								$style_variation_declarations[ $combined_feature_selectors ] = array_merge( $style_variation_declarations[ $combined_feature_selectors ], $new_feature_declarations );
+							} else {
+								$style_variation_declarations[ $combined_feature_selectors ] = $new_feature_declarations;
+							}
+							// Remove the feature from the block's node now the
+							// styles will be included under the feature level selector.
+							unset( $style_variation_node[ $feature_name ] );
+						}
+					}
+				}
+				$style_variation_declarations[ $style_variation_selector ] = static::compute_style_properties( $style_variation_node, $settings, null, $this->theme_json );
+			}
+		}
+
+		// Get a reference to element name from path.
+		// $block_metadata['path'] = array('styles','elements','link');
+		// Make sure that $block_metadata['path'] describes an element node, like ['styles', 'element', 'link'].
+		// Skip non-element paths like just ['styles'].
+		$is_processing_element = in_array( 'elements', $block_metadata['path'], true );
+
+		$current_element = $is_processing_element ? $block_metadata['path'][ count( $block_metadata['path'] ) - 1 ] : null;
+
+		$element_pseudo_allowed = array_key_exists( $current_element, static::VALID_ELEMENT_PSEUDO_SELECTORS ) ? static::VALID_ELEMENT_PSEUDO_SELECTORS[ $current_element ] : array();
+
+		// Check for allowed pseudo classes (e.g. ":hover") from the $selector ("a:hover").
+		// This also resets the array keys.
+		$pseudo_matches = array_values(
+			array_filter(
+				$element_pseudo_allowed,
+				function( $pseudo_selector ) use ( $selector ) {
+					return str_contains( $selector, $pseudo_selector );
+				}
+			)
+		);
+
+		$pseudo_selector = isset( $pseudo_matches[0] ) ? $pseudo_matches[0] : null;
+
+		// If the current selector is a pseudo selector that's defined in the allow list for the current
+		// element then compute the style properties for it.
+		// Otherwise just compute the styles for the default selector as normal.
+		if ( $pseudo_selector && isset( $node[ $pseudo_selector ] ) && array_key_exists( $current_element, static::VALID_ELEMENT_PSEUDO_SELECTORS ) && in_array( $pseudo_selector, static::VALID_ELEMENT_PSEUDO_SELECTORS[ $current_element ], true ) ) {
+			$declarations = static::compute_style_properties( $node[ $pseudo_selector ], $settings, null, $this->theme_json, $selector, $use_root_padding );
+		} else {
+			$declarations = static::compute_style_properties( $node, $settings, null, $this->theme_json, $selector, $use_root_padding );
+		}
+
+		$block_rules = '';
+
+		// 1. Separate the ones who use the general selector
+		// and the ones who use the duotone selector.
+		$declarations_duotone = array();
+		foreach ( $declarations as $index => $declaration ) {
+			if ( 'filter' === $declaration['name'] ) {
+				unset( $declarations[ $index ] );
+				$declarations_duotone[] = $declaration;
+			}
+		}
+
+		// Update declarations if there are separators with only background color defined.
+		if ( '.wp-block-separator' === $selector ) {
+			$declarations = static::update_separator_declarations( $declarations );
+		}
+
+		// 2. Generate and append the rules that use the general selector.
+		$block_rules .= static::to_ruleset( $selector, $declarations );
+
+		// 3. Generate and append the rules that use the duotone selector.
+		if ( isset( $block_metadata['duotone'] ) && ! empty( $declarations_duotone ) ) {
+			$selector_duotone = static::scope_selector( $block_metadata['selector'], $block_metadata['duotone'] );
+			$block_rules     .= static::to_ruleset( $selector_duotone, $declarations_duotone );
+		}
+
+		// 4. Generate Layout block gap styles.
+		if (
+			static::ROOT_BLOCK_SELECTOR !== $selector &&
+			! empty( $block_metadata['name'] )
+		) {
+			$block_rules .= $this->get_layout_styles( $block_metadata );
+		}
+
+		// 5. Generate and append the feature level rulesets.
+		foreach ( $feature_declarations as $feature_selector => $individual_feature_declarations ) {
+			$block_rules .= static::to_ruleset( $feature_selector, $individual_feature_declarations );
+		}
+
+		// 6. Generate and append the style variation rulesets.
+		foreach ( $style_variation_declarations as $style_variation_selector => $individual_style_variation_declarations ) {
+			$block_rules .= static::to_ruleset( $style_variation_selector, $individual_style_variation_declarations );
+		}
+
+		return $block_rules;
+	}
+
+	/**
+	 * Converts each style section into a list of rulesets
+	 * containing the block styles to be appended to the stylesheet.
+	 *
+	 * See glossary at https://developer.mozilla.org/en-US/docs/Web/CSS/Syntax
+	 *
+	 * For each section this creates a new ruleset such as:
+	 *
+	 *   block-selector {
+	 *     style-property-one: value;
+	 *   }
+	 *
+	 * @param array $style_nodes Nodes with styles.
+	 * @return string The new stylesheet.
+	 */
+	protected function get_block_classes( $style_nodes ) {
+		$block_rules = '';
+
+		foreach ( $style_nodes as $metadata ) {
+			if ( null === $metadata['selector'] ) {
+				continue;
+			}
+			$block_rules .= static::get_styles_for_block( $metadata );
+		}
+
+		return $block_rules;
 	}
 }
