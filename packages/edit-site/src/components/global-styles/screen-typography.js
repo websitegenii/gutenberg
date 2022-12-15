@@ -75,7 +75,7 @@ function Item( { name, parentMenu, element, label } ) {
 	);
 }
 
-function ScreenTypography( { name } ) {
+function ScreenTypography( { name, variationPath = '' } ) {
 	const parentMenu = name === undefined ? '' : '/blocks/' + name;
 
 	return (
@@ -121,7 +121,13 @@ function ScreenTypography( { name } ) {
 				</div>
 			) }
 			{ /* No typography elements support yet for blocks. */ }
-			{ !! name && <TypographyPanel name={ name } element="text" /> }
+			{ !! name && (
+				<TypographyPanel
+					name={ name }
+					variationPath={ variationPath }
+					element="text"
+				/>
+			) }
 		</>
 	);
 }
