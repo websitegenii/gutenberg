@@ -215,7 +215,7 @@ class Gutenberg_REST_Global_Styles_Controller_6_2 extends WP_REST_Global_Styles_
 			// This endpoint only supports the active or parent theme for now.
 			return new WP_Error(
 				sprintf( '%s', $request['template'] ),
-				__( 'Theme not found.' ),
+				__( 'Theme not found.', 'gutenberg' ),
 				array( 'status' => 404 )
 			);
 		}
