@@ -199,7 +199,7 @@ class Gutenberg_REST_Global_Styles_Controller_6_2 extends WP_REST_Global_Styles_
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Returns the given theme global styles variations.
 	 *
